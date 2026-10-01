@@ -1,0 +1,262 @@
+{
+ "skill": "osdr-biodata-api v1.0.0",
+ "how_to_run": "Give each prompt to the client with the skill installed (fresh chat). Pass = the client builds a URL matching expected_url_contains, runs it (or hands it over if egress is blocked), and the reported row count is within ±30% of expected_rows (OSDR grows). Also check the behaviour notes.",
+ "cases": [
+  {
+   "id": 1,
+   "prompt": "List all mouse RNA-seq datasets in OSDR.",
+   "expected_endpoint": "/v2/query/assays/",
+   "expected_url_contains": [
+    "technology%20type=/rna-seq/",
+    "study.characteristics.organism=/musculus/",
+    "format=json.records|format=csv"
+   ],
+   "expected_rows": 113,
+   "behaviour": "Reports ~111 distinct OSD accessions; mentions version/citation note."
+  },
+  {
+   "id": 2,
+   "prompt": "Which OSDR datasets come from the RR-1 mission, and what assays and tissues do they include?",
+   "expected_endpoint": "/v2/query/assays/",
+   "expected_url_contains": [
+    "Project%20Identifier=/RR-1([^\\d]|$)",
+    "technology%20type",
+    "material%20type"
+   ],
+   "expected_rows": 80,
+   "behaviour": "Regex is anchored so RR-10…RR-18 are excluded; 25 datasets."
+  },
+  {
+   "id": 3,
+   "prompt": "Find female mouse liver samples.",
+   "expected_endpoint": "/v2/query/samples/",
+   "expected_url_contains": [
+    "study.characteristics.sex=/female/",
+    "material%20type=/liver/",
+    "organism=/musculus/"
+   ],
+   "expected_rows": 820,
+   "behaviour": "Uses samples (not assays) because per-sample rows are wanted; if it had tried the factor field first and got 0 rows it must retry with the characteristic."
+  },
+  {
+   "id": 4,
+   "prompt": "Get the significantly differentially expressed genes (adj p < 0.05) for space flight vs ground control in OSD-515.",
+   "expected_endpoint": "/v2/query/data/",
+   "expected_url_contains": [
+    "id=OSD-515",
+    "file.filename=",
+    "column.Adj.p.value_(Space%20Flight)v(Ground%20Control)%3C"
+   ],
+   "expected_rows": 3947,
+   "behaviour": "Two-step: lists files (or contrasts) first, pins ONE exact file name (non-rRNArm), selects columns rather than column.* for the whole table. Does not return a 422."
+  },
+  {
+   "id": 5,
+   "prompt": "Which datasets have both RNA-seq differential expression results and DNA methylation data?",
+   "expected_endpoint": "two queries + client-side intersection",
+   "expected_url_contains": [
+    "file.data%20type=/differential%20expression",
+    "bisulfite|methylation"
+   ],
+   "expected_rows": null,
+   "behaviour": "Runs two cheap queries and intersects id.accession (never both filters in one URL). Distinguishes 'has a methylation assay + DE file' (~16: OSD-47, 48, 49, 98…397) from 'has both processed DE and DM tables' (4: OSD-47, 48, 103, 105) and says which it answered."
+  },
+  {
+   "id": 6,
+   "prompt": "What sex, strain and age information is recorded for OSD-104?",
+   "expected_endpoint": "/v2/query/assays/ or /samples/ with id.accession=OSD-104",
+   "expected_url_contains": [
+    "id.accession=OSD-104",
+    "study.characteristics"
+   ],
+   "expected_rows": 4,
+   "behaviour": "Discovers that age is stored as 'age at launch' (16 week), sex Female, strain C57BL/6J — via a bare study.characteristics prefix, not by guessing field names."
+  },
+  {
+   "id": 7,
+   "prompt": "Give me the download link for the differential expression file of OSD-168.",
+   "expected_endpoint": "/v2/query/assays/ with file.remote_url (or /v2/dataset/OSD-168/files/)",
+   "expected_url_contains": [
+    "id.accession=OSD-168",
+    "file.filename=/differential_expression/",
+    "file.remote_url"
+   ],
+   "expected_rows": 2,
+   "behaviour": "Prefixes the relative remote_url with https://osdr.nasa.gov."
+  },
+  {
+   "id": 8,
+   "prompt": "Which 16S datasets have differential abundance tables?",
+   "expected_endpoint": "/v2/query/assays/",
+   "expected_url_contains": [
+    "technology%20type=/16S",
+    "differential%20abundance"
+   ],
+   "expected_rows": 6,
+   "behaviour": "Mentions that three method-specific files (ancombc1, ancombc2, deseq2) exist per dataset."
+  },
+  {
+   "id": 9,
+   "prompt": "Show me the temperature and CO2 readings on ISS during RR-1.",
+   "expected_endpoint": "none",
+   "expected_url_contains": [],
+   "expected_rows": null,
+   "behaviour": "FIRST sentence states environmental telemetry is outside this skill and gives the EDA link https://visualization.osdr.nasa.gov/eda/. Builds NO biodata URL and does NOT probe /eda/api or any other API."
+  },
+  {
+   "id": 10,
+   "prompt": "How many Arabidopsis microarray datasets are there?",
+   "expected_endpoint": "/v2/query/assays/ or /datasets/",
+   "expected_url_contains": [
+    "microarray",
+    "arabidopsis"
+   ],
+   "expected_rows": 23,
+   "behaviour": "Counts distinct id.accession client-side (no count endpoint)."
+  },
+  {
+   "id": 11,
+   "prompt": "List all human astronaut datasets in OSDR.",
+   "expected_endpoint": "none first; optional /v2/query/datasets/ afterwards",
+   "expected_url_contains": [],
+   "expected_rows": null,
+   "behaviour": "FIRST sentence: 'OSDR does not host NASA human astronaut data', immediately followed by the NLSP (https://www.nasa.gov/hrp/nlsp/), LSDA and LSAH links. Only then may it offer OSDR's human-related holdings (Inspiration4 non-NASA crew, ground analogs, in-vitro), each labelled as such."
+  },
+  {
+   "id": 12,
+   "prompt": "Which datasets are from any Rodent Research mission?",
+   "expected_endpoint": "/v2/query/datasets/",
+   "expected_url_contains": [
+    "Project%20Identifier=/^RR-?\\d|^RRRM/"
+   ],
+   "expected_rows": 130,
+   "behaviour": "Uses an anchored regex; an unanchored /RR/ returns ~240 (matches 'Irradiation') and is a fail."
+  },
+  {
+   "id": 13,
+   "prompt": "List all amplicon sequencing datasets where a plant was the host organism.",
+   "expected_endpoint": "/v2/query/assays/",
+   "expected_url_contains": [
+    "technology%20type=/16S|ITS",
+    "host%20organism"
+   ],
+   "expected_rows": 26,
+   "behaviour": "Filters on study.characteristics.host organism (organism is 'Microbiota'); ~11 datasets: OSD-267, 268, 269, 385, 386, 412, 413, 414, 766, 772, 773."
+  },
+  {
+   "id": 14,
+   "prompt": "Get the differentially expressed genes for flight vs ground in OSD-48 with adj p < 0.05 and |log2FC| > 1.",
+   "expected_endpoint": "/v2/query/data/",
+   "expected_url_contains": [
+    "contrasts",
+    "%26"
+   ],
+   "expected_rows": null,
+   "behaviour": "Reads the contrasts file, finds two flight-vs-ground pairs (Carcass; Upon euthanasia), LISTS them and ASKS the user which to use instead of choosing. Once chosen: ENSEMBL, SYMBOL, Log2fc, Adj.p.value<=0.05, Stat and Group.Mean/Stdev of both groups; count of significant genes; top-10 up and top-10 down by log2FC; ends by asking whether the user wants a CSV of all significant genes. (Carcass pair: 635 significant.)"
+  },
+  {
+   "id": 15,
+   "prompt": "Which subjects (animals) appear in both OSD-102 and OSD-104, and what tissues and assays does each have?",
+   "expected_endpoint": "/v2/query/samples/",
+   "expected_url_contains": [
+    "id.accession=/^OSD-10[24]$/",
+    "study.source%20name",
+    "Project%20Identifier"
+   ],
+   "expected_rows": 76,
+   "behaviour": "Builds subject ID = project identifier | source name (e.g. RR-1 | RR1_FLT_M23); 12 subjects, kidney + soleus; excludes pooled/QC samples."
+  },
+  {
+   "id": 16,
+   "prompt": "Which Rodent Research datasets used only female mice?",
+   "expected_endpoint": "/v2/query/samples/",
+   "expected_url_contains": [
+    "study.characteristics.sex",
+    "study.factor%20value.sex",
+    "^RR"
+   ],
+   "expected_rows": null,
+   "behaviour": "Classifies per dataset from sample rows (all sexes == female, ignoring Not Applicable) → 89 datasets; lists accessions; RRRM-1 (RR-8) and RR-8 merged into one mission row."
+  },
+  {
+   "id": 17,
+   "prompt": "I need physical tissue samples from the RR-9 mice for my own assay — how do I get them from OSDR?",
+   "expected_endpoint": "none",
+   "expected_url_contains": [],
+   "expected_rows": null,
+   "behaviour": "First sentence says biospecimen requests are outside this skill and gives the NBISC link; no biodata query."
+  },
+  {
+   "id": 18,
+   "prompt": "Show me the differentially expressed genes for OSD-515, space flight vs ground control.",
+   "expected_endpoint": "/v2/query/data/",
+   "expected_url_contains": [
+    "contrasts",
+    "column.Stat_",
+    "column.Group.Mean_",
+    "Adj.p.value_(Space%20Flight)v(Ground%20Control)%3C"
+   ],
+   "expected_rows": 3947,
+   "behaviour": "Single-factor comparison → exactly one contrast, no question needed. Output: ENSEMBL, SYMBOL, Log2fc, Adj.p.value (≤0.05), Stat, Group.Mean/Stdev for both groups; 3,947 significant; top-10 up and top-10 down; ends by asking whether the user wants a CSV."
+  },
+  {
+   "id": 19,
+   "prompt": "Which genes are differentially expressed in OSD-95 in space flight vs ground at 25 µg/mL?",
+   "expected_endpoint": "/v2/query/data/",
+   "expected_url_contains": [
+    "id=OSD-95",
+    "25%20microgram%20per%20milliliter",
+    "column.Stat_"
+   ],
+   "expected_rows": 1493,
+   "behaviour": "Microbe study: the DE table has gene_id and no SYMBOL. Per SKILL.md §6 C the skill reads the header, lists the available non-sample columns and asks which to include (or, if the user already specified, uses gene_id, Log2fc, Adj.p.value, Stat, group mean/stdev). 1,493 significant rows for the 25 µg/mL flight-vs-ground contrast."
+  },
+  {
+   "id": 20,
+   "prompt": "Tell me about OSD-248: what was studied, what are the treatment groups and how many samples in each?",
+   "expected_endpoint": "/v2/dataset/OSD-248/ + /v2/query/samples/",
+   "expected_url_contains": [
+    "/v2/dataset/OSD-248/",
+    "id.accession=OSD-248",
+    "study.factor%20value"
+   ],
+   "expected_rows": 58,
+   "behaviour": "Title/description from the tree; 58 samples; 6 groups = distinct combinations of the 4 factors (spaceflight, duration, euthanasia location, dissection condition) with n (10/10/9/9/10/10); lists processed files; DOI."
+  },
+  {
+   "id": 21,
+   "prompt": "List all Drosophila datasets with their titles.",
+   "expected_endpoint": "/v2/query/datasets/",
+   "expected_url_contains": [
+    "organism=/drosophila/",
+    "investigation.study.study%20title"
+   ],
+   "expected_rows": 17,
+   "behaviour": "Uses investigation.study.study%20title as a bare column (investigation.study.title is not a field); 17 accessions with titles."
+  },
+  {
+   "id": 22,
+   "prompt": "list all inspiration 4 datasets that contain data files",
+   "expected_endpoint": "/v2/query/datasets/",
+   "expected_url_contains": [
+    "Project%20Identifier=/Inspiration/",
+    "&file.category"
+   ],
+   "expected_rows": 38,
+   "behaviour": "ONE call with bare &file.category (no GeneLab-processed / fastqc filter — the user did not say 'processed'). Reports all 10 Inspiration4 datasets (OSD-569–575, 630, 656, 687) with their file categories."
+  },
+  {
+   "id": 23,
+   "prompt": "List the differentially expressed genes for OSD-145 flight vs ground control comparison, filtered to adj p < 0.05 and |log2FC| > 1",
+   "expected_endpoint": "/v2/query/data/",
+   "expected_url_contains": [
+    "id=OSD-145",
+    "GLDS-145_rna_seq_differential_expression_GLbulkRNAseq.csv",
+    "contrasts",
+    "Adj.p.value_(Space%20Flight%20%26%20Frozen)v(Ground%20Control%20%26%20Frozen)%3C"
+   ],
+   "expected_rows": 1513,
+   "behaviour": "Uses the differential_EXPRESSION file (microbial RNA-seq; not differential abundance). Reads the contrasts file; the only flight-vs-ground contrast is (Space Flight & Frozen)v(Ground Control & Frozen) so it proceeds without asking, and never offers a contrast that is not a column in that file (there is no 'Not frozen' spaceflight group). Requests column.SYMBOL as usual; the 500 means this microbe table has none, so it reruns the same URL without SYMBOL (does not treat 500 as a missing dataset). Tables show gene_id as the first column, then log2FC, adj p, Stat, group mean/SD. 1,513 at adj p ≤ 0.05; 239 with |log2FC| > 1 (168 up, 71 down). Ends with the CSV offer."
+  }
+ ]
+}
