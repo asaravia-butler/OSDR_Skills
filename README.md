@@ -17,11 +17,11 @@ correct OSDR API calls.
 Each OSDR skill package lives on its own branch. The branch holds the installable zip,
 the unpacked package for browsing, installation guides for each client, and example prompts.
 
-| Skill | Branch | OSDR resource | Status |
-|---|---|---|---|
-| **OSDR BioData API** — find and pull biological datasets, assays, samples and GeneLab-processed data tables (e.g. RNA-seq, microarray, methylation, amplicon, …) | [`OSDR_BioData_API`](../../tree/OSDR_BioData_API) | [Biological Data API](https://visualization.osdr.nasa.gov/biodata/api/) | v1.0.0 |
-| **OSDR EDA API** — environmental telemetry (temperature, humidity, CO₂, radiation environment) for flight missions | `OSDR_EDA_API` | [Environmental Data Application](https://visualization.osdr.nasa.gov/eda/) | planned |
-| **OSDR RadLab API** — radiation dosimetry | `OSDR_RadLab_API` | [RadLab](https://visualization.osdr.nasa.gov/radlab/gui/data-api/) | planned |
+| Skill | Description | Branch | OSDR Resource | Status |
+|---|---|---|---|---|
+| **OSDR BioData API** | Find and pull biological datasets, assays, samples and GeneLab-processed data tables (e.g. RNA-seq, microarray, methylation, amplicon, …); uses the GeneLab Knowledge Graph first when the `mcp-genelab` MCP server is connected | [`OSDR_BioData_API`](../../tree/OSDR_BioData_API) | [Biological Data API](https://visualization.osdr.nasa.gov/biodata/api/) | v1.0.0 |
+| **OSDR EDA API** | Environmental telemetry (temperature, humidity, CO₂, radiation environment) for flight missions | `OSDR_EDA_API` | [Environmental Data Application](https://visualization.osdr.nasa.gov/eda/) | planned |
+| **OSDR RadLab API** | Radiation dosimetry | `OSDR_RadLab_API` | [RadLab](https://visualization.osdr.nasa.gov/radlab/gui/data-api/) | planned |
 
 ## How to use a skill
 
