@@ -3,7 +3,7 @@
 Agent **skills packages** for NASA's [Open Science Data Repository (OSDR)](https://science.nasa.gov/biological-physical/data/osdr/).
 
 A skills package is a small folder (a `SKILL.md` instruction file plus optional
-reference files and scripts) that teaches an AI assistant how to use an OSDR
+reference files and scripts) that teaches an LLM-based assistant how to use an OSDR
 resource correctly. For OSDR API skills, this includes which API endpoints exist, how to build a valid call,
 which metadata fields and values to filter on, and how to report the result.
 The packages follow the open [Agent Skills](https://agentskills.io/specification)
