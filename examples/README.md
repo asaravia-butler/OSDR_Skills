@@ -13,7 +13,13 @@ looks like there.
 | Gemini (Spark web app, Gemini CLI) | [`gemini.md`](gemini.md) |
 | VS Code / GitHub Copilot | [`vscode-copilot.md`](vscode-copilot.md) |
 
-Counts were taken from the live API in September 2026; OSDR grows, so
+Every answer ends with provenance lines — `Source: OSDR BioData API — <URL>`
+and, when the `mcp-genelab` MCP server is connected, `Source: GeneLab KG via
+mcp-genelab — <tool>(<args>)` for the parts that came from the knowledge
+graph (see [E12](#e12--same-questions-with-the-genelab-knowledge-graph-connected)).
+
+All counts and tables were re-verified against the live API on 9 November
+2026; OSDR grows, so
 expect small increases over time. `BASE` =
 `https://visualization.osdr.nasa.gov/biodata/api`.
 
@@ -300,7 +306,51 @@ reminder.
 
 ---
 
-## E12–E14 — Out-of-scope redirects (no biodata query)
+## E12 — Same questions with the GeneLab Knowledge Graph connected
+
+When the `mcp-genelab` MCP server is connected, known-study questions are
+answered from the KG first and every part of the answer is labelled.
+
+**Prompt:** *Show me the differentially expressed genes for OSD-515, space flight vs ground control.*
+
+**Expected (KG connected):** `create_session` → `select_assays("OSD-515")`
+(groups: 1 Ground Control, 2 Space Flight, 3 Vivarium Control) →
+`select_assays("OSD-515", "2,1")` → assay `OSD-515-79b621bb042221f4160c19eaa27ab36b`
+→ `find_differentially_expressed_genes(assay, adj_p_threshold=0.05, top_n=10)`.
+**3,554 annotated genes** (2,511 up, 1,043 down) with a note that the GeneLab
+file also holds unannotated genes (3,947 in E4), ENSEMBL ids and Wald
+statistics; top-10 tables (symbol, gene name, log2FC, adj p, group mean/SD);
+CSV offer. Closing lines:
+
+> Source: GeneLab KG via mcp-genelab — `select_assays("OSD-515")`, `select_assays("OSD-515","2,1")`, `find_differentially_expressed_genes("OSD-515-79b621bb…", 0.05, 10)`
+> Source: OSDR BioData API — `…/v2/query/datasets/?id.accession=OSD-515&investigation.study.comment.doi&format=json.records` (DOI)
+
+**Prompt:** *Tell me about OSD-248: what was studied, what are the treatment groups and how many samples in each?*
+
+**Expected (KG connected):** title, description, groups and the 30 contrasts
+from `get_study_info` / `select_assays` (KG); sample counts per group
+(10 / 9 / 10 / 10 / 10 / 9, 58 total) from the API `/samples/` call; DOI from
+the API — each labelled with its own Source line.
+
+**Prompt:** *What assays and data types does OSD-47 have, and which of them have processed results I can query?*
+
+**Expected (KG connected):** RNA-seq and WGBS contrasts from
+`get_study_info("OSD-47")` (KG) plus the mass-spectrometry proteomics and
+microscopy assays from `…/v2/dataset/OSD-47/assays/` (API only); nothing is
+reported missing just because the KG lacks it.
+
+**Prompt (study not in KG):** *List the differentially expressed genes for OSD-145 …* (E10)
+
+**Expected:** `get_study_info("OSD-145")` → "No study found" → the E10 API
+path; the answer says the study is not in the KG and labels the API URLs.
+
+**Without the server:** every one of these is answered exactly as in
+E1–E11 from the API, the knowledge graph is not mentioned, and each answer
+ends with `Source: OSDR BioData API — <URL>`.
+
+---
+
+## E13–E15 — Out-of-scope redirects (no biodata query)
 
 | Prompt | Expected first sentence |
 |---|---|

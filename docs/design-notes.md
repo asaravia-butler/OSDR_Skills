@@ -51,7 +51,7 @@ and use the URLs directly; nothing depends on it.
 
 ## 2. API behaviours encoded in the skill
 
-All verified against the live API in September 2026.
+All verified against the live API on 9 November 2026.
 
 **Endpoints.** `/v2/query/{datasets,assays,samples,metadata,data}/` and the
 per-dataset REST tree `/v2/dataset/OSD-###/{,files/,assays/}`. The
@@ -76,13 +76,18 @@ prefixed `OSD-###/<assay name>/`.
 `investigation.study.study%20title` (not `.title`, which is always null).
 DOI is `investigation.study.comment.doi`. `project type` distinguishes
 Spaceflight / Ground / Flight studies. Amplicon studies record the host in
-`host organism`. `organism part` is populated in ~112 datasets (mostly plants,
-some mouse) — it is a tissue alias, not a plant-only field.
+`host organism`. `organism part` is populated as a characteristic in 44 datasets (29
+Arabidopsis, 5 mouse, the rest other plants) and as a factor value in 32 —
+it is a tissue alias, not a plant-only field. `project type` values are not
+normalised (`Spaceflight Study`, `Spaceflight`, `Spaceflight study`,
+`Ground Study` / `Ground study`, `Flight Study`, `Parabolic …`, `High
+Altitude Study`, `Suborbital Flight Study`), so match them with a regex. DOIs
+exist for 624 of 640 datasets.
 
 **Missions.** Project Identifier is the primary mission field; values are
 free text with aliases (`RRRM-1 (RR-8)`, `RR-17` for RRRM-2, `RR-1_BSP`,
-comma-joined lists). About 22 datasets have a `mission name` but a null
-Project Identifier (e.g. OSD-100, SpaceX-4). Mission questions therefore
+comma-joined lists). Twenty datasets have a `mission name` but a null
+Project Identifier (e.g. OSD-100, OSD-120, OSD-133). Mission questions therefore
 query both fields and merge.
 
 **Data files.** `/data/` accepts exactly one file (422 for zero or many),
@@ -118,6 +123,33 @@ the skill retries once, then narrows.
 
 **File URLs.** `file.remote_url` is relative; prefix `https://osdr.nasa.gov`.
 
+## 2b. Knowledge graph first
+
+The `mcp-genelab` MCP server exposes the GeneLab Knowledge Graph (Neo4j):
+`Study` → `Assay` (one node per *contrast*, `factors_1` vs `factors_2`) →
+`MGene` / `MethylationRegion` / `Organism` edges carrying log2FC, adjusted
+p / q, group means and SDs; `Mission` nodes are launch vehicles (SpaceX-4),
+not Project Identifiers. The KG served by the
+MCP server is spoke-genelab v0.3.1, built 11 March 2026 (tag
+`v0.3.1+20260311` in BaranziniLab/spoke_genelab): 212 studies, ~13 100
+contrast assays, RNA-seq / microarray / WGBS / 16S / ITS only.
+
+The skill therefore routes by *question type*, not by a global switch:
+known-accession questions inside KG coverage → KG; anything else → API; a
+request that straddles the boundary (study report with sample counts, "what
+data does OSD-47 have") → both, labelled per part. The rule is written so a
+small model never reports "no data" because the KG lacks it (OSD-145 is not
+in the KG; the API has its DE file). Tool names are written fully qualified
+(`mcp-genelab:get_study_info`) as the Agent Skills best-practice guidance
+recommends, and the KG section is skipped entirely when the tools are absent
+so API-only clients are unaffected.
+
+KG results differ from the GeneLab files in two ways the skill has to
+explain: they are keyed by gene symbol (no ENSEMBL/TAIR/gene_id, no Wald
+statistic, unannotated genes absent — OSD-515: 3,554 vs 3,947 significant),
+and contrast naming is `Space Flight,Carcass` vs the file's
+`(Space Flight & Carcass)v(…)`.
+
 ## 3. Scope
 
 The biodata API covers biological datasets only. The skill hard-codes
@@ -132,7 +164,8 @@ human eyes) are in scope.
 
 - No adaptive statistical thresholds; adj p ≤ 0.05 is fixed and the user is
   asked before changing it.
-- No plant/microbe default column sets yet — list and ask.
+- No separate plant/microbe column sets: the same default columns are used,
+  with `SYMBOL` dropped when the table lacks it.
 - No full-text search, counting endpoint or version lookup (not in the API;
   version comes from the S3 bucket listing).
 - No client-specific instructions inside the package; those live in this

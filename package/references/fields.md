@@ -19,7 +19,7 @@ whole stored value.
 | Source name (animal/plant/culture ID within a study) | `study.source%20name` | subject ID = project identifier + source name |
 | Organism | `study.characteristics.organism` | amplicon/microbiome studies store `Microbiota` here — see host organism |
 | Host organism (microbiome / 16S / ITS) | `study.characteristics.host%20organism` | plus `host%20strain`, `host%20sex`; vocabulary in §3 |
-| Tissue / material | `study.characteristics.material%20type` | primary tissue field for animal studies; also `study.characteristics.organism%20part` (populated in ~112 datasets, mostly Arabidopsis/plant and microbiome, a few mouse), `study.factor%20value.tissue`, `study.factor%20value.organism%20part` |
+| Tissue / material | `study.characteristics.material%20type` | primary tissue field for animal studies; also `study.characteristics.organism%20part` (populated in ~44 datasets, mostly Arabidopsis/plant, 5 mouse; a further ~32 use the factor-value form), `study.factor%20value.tissue`, `study.factor%20value.organism%20part` |
 | Sex | `study.characteristics.sex` | fallback `study.factor%20value.sex` |
 | Strain | `study.characteristics.strain` | fallback `study.factor%20value.strain` |
 | Genotype | `study.characteristics.genotype` | fallback `study.factor%20value.genotype` |

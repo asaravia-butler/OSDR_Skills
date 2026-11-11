@@ -4,25 +4,27 @@ All notable changes to the skills package. Versions follow
 [Semantic Versioning](https://semver.org/); the version is recorded in
 `metadata.version` in `SKILL.md`.
 
-## 1.0.0 — 2026-09-29
+## 1.0.0 — 2026-11-09
 
 First public release.
 
 **Package**
 
-- `SKILL.md` (360 lines): scope gate with verbatim redirects (astronaut data
+- `SKILL.md` (414 lines): scope gate with verbatim redirects (astronaut data
   → NLSP/LSDA/LSAH; environmental telemetry → EDA; dosimetry → RadLab;
-  biospecimens → NBISC; microbial isolates → SMCC); quick-reference filter
-  table with all OR-regex selectors in a code block; step-by-step procedure
+  biospecimens → NBISC; microbial isolates → SMCC); knowledge-graph-first
+  rules for the `mcp-genelab` MCP server (§0b); quick-reference filter table
+  with all OR-regex selectors in a code block; step-by-step procedure
   (`curl -g`, 504 retry); URL grammar; endpoint/cost ladder; empty-result
-  fallbacks; GeneLab-processed data recipe; subject/cohort rules; reporting
-  contract.
+  fallbacks; GeneLab-processed data recipe and output contract; subject/cohort
+  rules; reporting and provenance rules.
 - `references/`: `fields.md` (canonical paths, alias order, live
   vocabularies with counts), `processed-files.md` (GeneLab file names,
-  columns, group and contrast construction), `cohorts.md` (Python snippets),
-  `examples.md` (65 verified question → URL pairs), `network-setup.md`,
-  `scope.md` (identifier model, DOI/version, out-of-scope templates, API
-  limitations).
+  columns, group and contrast construction, processed-data detection),
+  `mcp-genelab.md` (KG tool map, coverage, KG-vs-API split, provenance
+  wording), `cohorts.md` (Python snippets), `examples.md` (verified
+  question → URL pairs), `network-setup.md`, `scope.md` (identifier model,
+  DOI/version, out-of-scope templates, API limitations).
 - `scripts/osdr_query.py`: standard-library helper with retries and the
   `assays` / `datasets` / `samples` / `files` / `contrasts` / `dataset`
   subcommands and `--fallback`.
@@ -42,8 +44,7 @@ First public release.
   `Log2fc_(g1)v(g2)`, `Adj.p.value_(g1)v(g2)` (≤ 0.05), `Stat_(g1)v(g2)`,
   plus `Group.Mean_` / `Group.Stdev_` for both groups; count of significant
   features; top-10 up- and down-regulated by log2FC; ends by offering a CSV
-  of all significant features. Plant and microbe tables (no `SYMBOL`): list
-  the available columns and ask.
+  of all significant features.
 - "Has GeneLab-processed data" = at least one file in the *GeneLab Processed*
   category whose name does not contain `fastqc`, `multiqc` or `md5sum`
   (`file.filename=/^(?!.*(fastqc|multiqc|md5sum)).*/`). Inspiration4 →
@@ -64,23 +65,21 @@ First public release.
   first; `SYMBOL` is always requested (animal and plant tables have it) and
   dropped on a 500 (some microbe tables lack it).
 
+**GeneLab Knowledge Graph (`mcp-genelab`)**
+
+- §0b in `SKILL.md` and `references/mcp-genelab.md`: when `mcp-genelab:*`
+  tools are present, questions about a known OSD accession go to the KG first
+  (`get_study_info`, `select_assays`, `find_differentially_expressed_genes`,
+  `…methylated_regions`, `…abundant_organisms`, `find_common_*`); studies or
+  assays the KG lacks, sample-level metadata, files, counts tables and all
+  OSDR-wide discovery go to the API; mixed answers use both. Without the
+  server the skill is API-only and does not mention the KG.
+- Every answer labels its parts: `Source: GeneLab KG via mcp-genelab —
+  <tool>(<args>)` or `Source: OSDR BioData API — <URL>`.
+
 **Compatibility**
 
 Agent Skills format; loads unchanged in Claude (claude.ai, desktop, Cowork,
 Claude Code), ChatGPT / Codex, Gemini (Spark, CLI) and VS Code / GitHub
-Copilot. Tested on Claude Haiku, Sonnet, Opus and Fable.
-
----
-
-### Pre-release history (not published)
-
-Internal iterations 2.0 → 2.1.2 before the version was reset to 1.0.0 for the
-first release: converted the original single-file notes to the Agent Skills
-layout with progressive disclosure; moved OR regexes out of markdown tables
-(small models copied `\|` into URLs); added the scope gate and verbatim
-redirect templates; fixed the study-title field path; added the RRRM aliases,
-group construction, ask-on-ambiguity rule, DE output contract, group
-mean/SD columns and the FastQC/MultiQC exclusion for processed-data
-detection. An intermediate 2.2 (adaptive adjusted-p cutoff, header probing,
-extra script subcommands) was withdrawn because it degraded results on small
-models.
+Copilot. Tested on Claude Haiku, Sonnet, Opus and Fable, with and without
+the `mcp-genelab` server connected.

@@ -1,6 +1,6 @@
 # Testing `osdr-biodata-api`
 
-The acceptance suite is [`evals.json`](evals.json): 23 prompts, each with the
+The acceptance suite is [`evals.json`](evals.json): 25 prompts, each with the
 expected endpoint, URL fragments, row count and behaviour. It is the
 regression set every change to the package is checked against, and the
 quickest way to find out whether the skill works in a given client / model.
@@ -18,6 +18,25 @@ Run these seven in a **fresh chat** after installing:
 | 22 | list all inspiration 4 datasets that contain data files | All **10** Inspiration4 datasets with their file categories; one call with bare `&file.category` and **no** FastQC/MultiQC filter (that filter is only for "GeneLab-processed") |
 | 23 | List the differentially expressed genes for OSD-145 flight vs ground control comparison, filtered to adj p < 0.05 and \|log2FC\| > 1 | Uses the `differential_expression` file (microbial RNA-seq, not differential abundance); only one flight-vs-ground contrast exists so no question; `gene_id` is the first column; `SYMBOL` requested → 500 → same URL rerun without it; 1,513 significant, 239 with \|log2FC\| > 1 |
 | 9 | Show me the temperature and CO2 readings on ISS during RR-1. | First sentence says this is outside the skill and links the EDA; **no** biodata URL and no probing of other APIs |
+
+## Knowledge-graph scenarios (`mcp-genelab`)
+
+Run the smoke test twice when you can:
+
+**(a) `mcp-genelab` connected.** Cases with a `with_kg` note in `evals.json`
+must follow it — e.g. case 18 answers from
+`select_assays` → `find_differentially_expressed_genes` (2,511 up / 1,043
+down annotated genes, with a note that the API file holds 3,947), case 14
+lists the two OSD-48 pairs from `select_assays` and asks, case 20 mixes KG
+metadata with API sample counts, case 23 falls back to the API after
+`get_study_info` reports OSD-145 is not in the KG, case 24 merges KG
+contrasts with API-only assays. Every answer must label each part
+`Source: GeneLab KG via mcp-genelab — <tool>(<args>)` or
+`Source: OSDR BioData API — <URL>`. Discovery and scope-gate cases make no
+KG call.
+
+**(b) `mcp-genelab` not connected.** No KG tool is called and the knowledge
+graph is never mentioned; all answers carry API `Source` lines (case 25).
 
 ## Full protocol (about 20 minutes per client)
 
@@ -43,8 +62,8 @@ the next version — open an issue on this branch.
 
 ## Known-good results at 1.0.0
 
-Tested with Claude Haiku, Sonnet, Opus and Fable (claude.ai and Cowork). All
-23 cases pass on Sonnet and above; on Haiku the remaining variability is
+Tested with Claude Haiku, Sonnet, Opus and Fable (claude.ai and Cowork), in
+both KG scenarios (November 2026). All 25 cases pass on Sonnet and above; on Haiku the remaining variability is
 occasionally choosing `column.*` for a whole table (case 4) or forgetting the
 CSV offer. Other clients load the same package; their transcripts should be
 added to `examples/` as they are collected.

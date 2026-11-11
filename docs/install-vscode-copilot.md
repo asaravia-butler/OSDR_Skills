@@ -83,5 +83,11 @@ In a fresh Agent-mode chat:
 | *Which OSDR datasets come from the RR-1 mission, and what assays and tissues do they include?* | 25 datasets (80 dataset × assay × tissue rows), including the `RR-1_BSP` alias |
 | *I need physical tissue samples from the RR-9 mice — how do I get them from OSDR?* | No biodata query; a redirect to NBISC (NASA Biological Institutional Scientific Collection) |
 
+**GeneLab Knowledge Graph (optional).** If the `mcp-genelab` MCP server is
+connected in this client, the skill uses it first for known-study questions
+and labels every answer part as KG or API; nothing in the skill needs
+configuring. To connect the server, follow the VS Code / Copilot instructions in the
+mcp-genelab repository: <https://github.com/sbl-sdsc/mcp-genelab/tree/main#vs-code-with-github-copilot>.
+
 More cases: [`testing.md`](testing.md) and
 [`../examples/vscode-copilot.md`](../examples/vscode-copilot.md).

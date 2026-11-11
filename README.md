@@ -1,11 +1,22 @@
 # OSDR BioData API skill — `osdr-biodata-api` v1.0.0
 
-A skills package that lets an AI assistant (Claude, ChatGPT/Codex, Gemini,
+A skills package that lets an LLM-based assistant (Claude, ChatGPT/Codex, Gemini,
 VS Code / GitHub Copilot) answer natural-language questions about NASA OSDR
 biological data by building and running the correct
 [OSDR Biological Data API](https://visualization.osdr.nasa.gov/biodata/api/)
 calls. The API is public — no key, no login — and every call is a plain HTTPS
 GET URL.
+
+## Contents
+
+- [What it does](#what-it-does)
+- [Limitations](#limitations)
+- [What is in the package](#what-is-in-the-package)
+- [Installation](#installation)
+- [Examples](#examples)
+- [Other documentation](#other-documentation)
+- [Sources](#sources)
+- [Citation and licence](#citation-and-licence)
 
 ## What it does
 
@@ -39,6 +50,14 @@ and the assistant will:
 - **redirect** out-of-scope requests (astronaut data → NLSP/LSDA/LSAH,
   environmental telemetry → EDA, radiation dosimetry → RadLab, biospecimens →
   NBISC, microbial isolates → SMCC) without running a biodata query.
+- **use the GeneLab Knowledge Graph first** when the `mcp-genelab` MCP server
+  is connected: study metadata, groups and differential expression /
+  methylation / abundance results for the ~212 studies in the KG come from
+  its tools; anything the KG does not hold (studies or assays outside it,
+  sample-level metadata, files, counts tables, discovery across OSDR) is
+  fetched from the API, and every answer states which parts came from the KG
+  (tool calls) and which from the API (URLs). Without the server the skill is
+  API-only.
 
 ## Limitations
 
@@ -62,6 +81,11 @@ and the assistant will:
   Copilot load, and the instructions are written for smaller models, but
   answer completeness varies with the model; the `docs/evals.json` cases are
   the acceptance test for any client.
+- **Knowledge-graph coverage.** The KG holds RNA-seq, microarray, WGBS and
+  16S/ITS *differential results* and study metadata for ~212 studies, keyed by
+  gene symbol (no ENSEMBL ids, Wald statistics or unannotated genes). The skill
+  says when a KG count differs from the GeneLab file for that reason and offers
+  the API file.
 - **Gene annotation.** Some microbial differential-expression tables have no
   `SYMBOL` column; results are then keyed by `gene_id` only and the skill
   offers to list the remaining columns.
@@ -76,9 +100,10 @@ that require it, e.g. the Gemini web app). The unpacked package is also in
 
 | File | Required? | What it is |
 |---|---|---|
-| `SKILL.md` | **Yes** | The skill: frontmatter (`name`, `description`) that the client uses to decide when to load it, plus the instructions — scope gate, quick-reference filters, step-by-step procedure, URL grammar, endpoint choice and cost ladder, empty-result fallbacks, data-file (DE/DM/DA) recipe and output contract, subject/cohort rules, reporting rules. 370 lines. |
+| `SKILL.md` | **Yes** | The skill: frontmatter (`name`, `description`) that the client uses to decide when to load it, plus the instructions — scope gate, quick-reference filters, step-by-step procedure, URL grammar, endpoint choice and cost ladder, empty-result fallbacks, data-file (DE/DM/DA) recipe and output contract, subject/cohort rules, reporting rules. 414 lines. |
 | `references/fields.md` | Recommended | Canonical metadata field paths, alias order (age, tissue, strain, mission variants), and live vocabularies with counts (organisms, host organisms, technologies, measurement types, project identifiers incl. RR/RRRM aliases, spaceflight values, sex, file categories/subcategories/data types, factor and characteristic names). |
 | `references/processed-files.md` | Recommended | GeneLab standardized file names per omics type, their columns, how sample groups and contrasts are named and built, the three-step data-pull recipe, the "has GeneLab-processed data" rule, and size limits. |
+| `references/mcp-genelab.md` | Recommended | GeneLab Knowledge Graph (`mcp-genelab` MCP server): tool map, coverage, which questions go to the KG vs the API, workflows, provenance wording, KG-vs-API output differences. Read only when the server is connected. |
 | `references/cohorts.md` | Recommended | Python snippets: retry helper, per-accession enrichment, subject IDs (Project Identifier + Source Name), "all samples are X" datasets, two-facet intersections, meta-analysis corpus, astronaut/human requests. |
 | `references/examples.md` | Recommended | 65 verified question → URL pairs (copy-paste templates with expected row counts). |
 | `references/network-setup.md` | Recommended | Hosts to allow-list, how to run calls (`curl -g`), per-client network notes. |
@@ -100,6 +125,12 @@ app**, and (where relevant) the command-line tool:
 
 After installing, run the short test in [`docs/testing.md`](docs/testing.md).
 
+**Optional — GeneLab Knowledge Graph.** If the `mcp-genelab` MCP server is
+connected in your client, the skill detects its tools and uses it first; no
+change to the skill or its files is needed. Per-client connection instructions are in the mcp-genelab repository:
+<https://github.com/sbl-sdsc/mcp-genelab> (each install guide above links to
+its client's section).
+
 ## Examples
 
 [`examples/`](examples/) contains a shared set of example prompts with the
@@ -108,7 +139,7 @@ how to invoke the skill there and what a correct response looks like.
 
 ## Other documentation
 
-- [`docs/testing.md`](docs/testing.md) — how to run the acceptance tests; `docs/evals.json` holds the 23 cases.
+- [`docs/testing.md`](docs/testing.md) — how to run the acceptance tests; `docs/evals.json` holds the 25 cases.
 - [`docs/CHANGELOG.md`](docs/CHANGELOG.md) — version history.
 - [`docs/design-notes.md`](docs/design-notes.md) — why the package is structured this way and the API behaviours it encodes.
 

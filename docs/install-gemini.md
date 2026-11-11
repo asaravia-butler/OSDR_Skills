@@ -32,9 +32,7 @@ Same interface in both.
    plain URLs.
 
 **Manage:** on the Skills page click the skill → **More** → **Disable / Edit /
-Download / Delete**.
-**Update:** delete the old skill and upload the new flat zip (or use **Edit**
-to replace files).
+Download**.
 
 ---
 
@@ -69,6 +67,12 @@ In a fresh task / session:
 | *List all Drosophila datasets in OSDR with their titles.* | 17 datasets from a `/datasets/` URL with `organism=/drosophila/` |
 | *Which Rodent Research datasets used only female mice?* | ~89 datasets: two queries (RR datasets, then those with any male samples) and a set difference, or one per-dataset sex breakdown |
 | *Show me the temperature and CO₂ readings on ISS during RR-1.* | No biodata query; a redirect to the OSDR Environmental Data Application (EDA) |
+
+**GeneLab Knowledge Graph (optional).** If the `mcp-genelab` MCP server is
+connected in this client, the skill uses it first for known-study questions
+and labels every answer part as KG or API; nothing in the skill needs
+configuring. To connect the server, follow the Gemini instructions in the mcp-genelab
+repository: <https://github.com/sbl-sdsc/mcp-genelab/tree/main#gemini>.
 
 More cases: [`testing.md`](testing.md) and
 [`../examples/gemini.md`](../examples/gemini.md).

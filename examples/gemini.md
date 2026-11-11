@@ -5,8 +5,8 @@ the Gemini CLI. Installation:
 [`../docs/install-gemini.md`](../docs/install-gemini.md).
 Expected results for every example: [`README.md`](README.md).
 
-**Status:** the expected outputs below come from the live API and are
-identical to those validated in Claude. Gemini transcripts from testers
+**Status:** the expected outputs below come from the live API (re-verified
+9 November 2026) and are identical to those validated in Claude. Gemini transcripts from testers
 should be added here (open a PR on this branch with the model and date).
 
 ## How the skill is invoked
@@ -19,7 +19,9 @@ should be added here (open a PR on this branch with the model and date).
 - **Gemini CLI:** ask, or mention the skill name. Gemini asks you to approve
   activating the skill, then runs `curl -g …` (or the Python helper) through
   its shell tool; approve those calls.
-- A correct answer always lists the URL(s) run.
+- A correct answer always lists the URL(s) run, and — when the `mcp-genelab`
+  MCP server is connected (Gemini CLI) — labels each part `Source: GeneLab KG
+  via mcp-genelab — <tool>(<args>)` or `Source: OSDR BioData API — <URL>`.
 
 ---
 
@@ -105,13 +107,31 @@ filtering client-side — still four datasets.
 
 ---
 
-## Example 6 — E12–E14, out-of-scope redirects
+## Example 6 — E13–E15, out-of-scope redirects
 
 | Prompt | Expected |
 |---|---|
 | `Show me the temperature and CO2 readings on ISS during RR-1.` | First sentence: outside this skill → `https://visualization.osdr.nasa.gov/eda/`. No biodata URL. |
 | `List all human astronaut datasets in OSDR.` | Redirect to NLSP / LSDA / LSAH; no query. |
 | `I need physical tissue samples from the RR-9 mice — how do I get them from OSDR?` | Redirect to NBISC; no query. |
+
+---
+
+## Example — with the `mcp-genelab` server connected
+
+**Prompt:** `Show me the differentially expressed genes for OSD-515, space flight vs ground control.`
+
+**Expected answer:** the assistant calls `create_session`,
+`select_assays("OSD-515")`, `select_assays("OSD-515","2,1")` and
+`find_differentially_expressed_genes(<assay id>, 0.05, 10)` instead of the
+API data call: **3,554 annotated genes** (2,511 up, 1,043 down), a note that
+the GeneLab file also holds unannotated genes (3,947), ENSEMBL ids and Wald
+statistics, top-10 tables (symbol, gene name, log2FC, adj p, group mean/SD),
+the CSV offer, and Source lines naming the KG tools plus the API DOI URL.
+For a study the KG lacks (OSD-145) `get_study_info` returns "No study
+found" and the answer falls back to the API path above, saying so. Full
+expectations: [`README.md` E12](README.md#e12--same-questions-with-the-genelab-knowledge-graph-connected).
+Without the server, nothing in this file changes.
 
 ---
 

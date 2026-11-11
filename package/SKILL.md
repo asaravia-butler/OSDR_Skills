@@ -1,6 +1,6 @@
 ---
 name: osdr-biodata-api
-description: Build and run NASA OSDR (Open Science Data Repository / GeneLab) Biological Data API queries. Use when a user asks to find, list, filter, count, or download OSDR/GeneLab datasets, assays, samples, or processed data files (RNA-seq, microarray, methylation, 16S/amplicon, proteomics, behaviour, imaging, etc.) by organism, tissue, mission (RR-1, Inspiration4, Bion-M1…), spaceflight/radiation/ground-analog factor, sex, strain, age, technology, or accession (OSD-###, GLDS-###); to pull differential expression / abundance / count tables or download URLs; or to assemble cross-study cohorts. Every call is a public HTTPS GET URL with no API key. Does NOT cover environmental telemetry, radiation dosimetry, biospecimens, or NASA astronaut records — for those it only points to EDA, RadLab, NBISC, SMCC and NLSP.
+description: Build and run NASA OSDR (Open Science Data Repository / GeneLab) Biological Data API queries. Use when a user asks to find, list, filter, count, or download OSDR/GeneLab datasets, assays, samples, or processed data files (RNA-seq, microarray, methylation, 16S/amplicon, proteomics, behaviour, imaging, etc.) by organism, tissue, mission (RR-1, Inspiration4, Bion-M1…), spaceflight/radiation/ground-analog factor, sex, strain, age, technology, or accession (OSD-###, GLDS-###); to pull differential expression / abundance / count tables or download URLs; or to assemble cross-study cohorts. Every call is a public HTTPS GET URL with no API key; when the mcp-genelab MCP server (GeneLab Knowledge Graph) is connected, it is queried first and the API fills the gaps. Does NOT cover environmental telemetry, radiation dosimetry, biospecimens, or NASA astronaut records — for those it only points to EDA, RadLab, NBISC, SMCC and NLSP.
 license: Public domain (NASA data); skill text CC0
 compatibility: Needs outbound HTTPS to visualization.osdr.nasa.gov (and osdr.nasa.gov for downloads). Optional helper script needs Python 3.8+ (standard library only).
 metadata:
@@ -12,12 +12,14 @@ metadata:
 # OSDR Biological Data API
 
 Build one plain HTTPS GET URL per question, run it, and report the result.
-No key, no login. Check scope first (§0); if a result is empty, apply §5
-before saying "no data"; if a call returns 504, retry it (§2 step 6).
+No key, no login. Check scope first (§0), then the knowledge graph if
+`mcp-genelab` is connected (§0b); if a result is empty, apply §5 before
+saying "no data"; if a call returns 504, retry it (§2 step 6).
 
 ## Contents
 
 0. Scope gate — answer these WITHOUT building a query
+0b. Knowledge graph first — `mcp-genelab` (when connected)
 1. Quick reference (the 80% case)
 2. Step-by-step procedure
 3. URL grammar rules
@@ -47,6 +49,46 @@ If a separate skill for that resource is installed, hand off to it.
 | Full-text search, GEO/PRIDE/SRA, compute | see `references/scope.md` |
 
 After the redirect you may offer an in-scope follow-up ("I can list the RR-9 biological datasets in OSDR"). Radiation as an *experimental factor* of a biology study (`study.factor%20value.absorbed%20radiation%20dose`, `Project%20Identifier=/Irradiation/`) IS in scope.
+
+---
+
+## 0b. Knowledge graph first — `mcp-genelab` (when connected)
+
+If tools named `mcp-genelab:*` are available, the GeneLab Knowledge Graph
+(KG) is the first source for questions about a **known OSD accession**:
+study metadata and groups (`mcp-genelab:get_study_info`,
+`mcp-genelab:select_assays`), differential expression
+(`mcp-genelab:find_differentially_expressed_genes`), methylation
+(`…find_differentially_methylated_regions`), amplicon abundance
+(`…find_differentially_abundant_organisms`) and cross-assay overlaps
+(`…find_common_*`). Call `mcp-genelab:create_session` once and pass its
+`session_id` to every call. In the KG one **Assay** = one contrast
+(`factors_1` vs `factors_2`, condition 1 vs 2); `select_assays(study_id)`
+lists the groups, `select_assays(study_id, selection="i,j")` gives the assay
+id for group i vs group j.
+
+KG coverage: ~212 studies; only *differential results* of RNA-seq,
+microarray, WGBS and 16S/ITS assays plus study/mission metadata. **Not** in
+the KG: sample-level metadata and counts per group, file names / download
+URLs, raw or normalized count tables, proteomics, imaging and all other assay
+types, Project Identifier (RR-1, Inspiration4…) discovery, repository-wide
+searches. KG gene tables carry symbols only (no ENSEMBL id, no Wald
+statistic, unannotated genes omitted).
+
+1. Known OSD, question inside KG coverage, study and assay present → answer
+   from the KG.
+2. Study absent (`get_study_info` → "No study found"), the assay type absent,
+   or part of the request outside coverage (e.g. RNA-seq DE is in the KG but
+   the imaging files or per-group sample counts are not) → KG for the covered
+   part, API (§1–§7) for the rest. Never report "no data" because the KG
+   lacks it.
+3. Discovery across OSDR (by organism, tissue, mission, factor, file) → API.
+4. No `mcp-genelab:*` tools → API only; do not mention the KG.
+
+**Provenance is mandatory.** Label every result:
+"Source: GeneLab KG via mcp-genelab — `<tool>(<key args>)`" or
+"Source: OSDR BioData API — `<URL>`"; a mixed answer lists both, per part.
+Details and worked examples: `references/mcp-genelab.md`.
 
 ---
 
@@ -330,7 +372,8 @@ File names, columns, per-omics conventions, `file.category` recipe:
 - Row count from the **complete** response (`wc -l`, `len(json)`), never after
   `head`; what a row is (dataset / assay / sample); distinct `OSD-###`
   (`GLDS-###`/`LSDS-###` in file names are ids inside the same study).
-- Show the exact URL(s) you ran.
+- Show the exact URL(s) you ran, and for each part of the answer whether it
+  came from the KG (`mcp-genelab` tool + arguments) or from an API URL (§0b).
 - Download URLs: `file.remote_url` from `/v2/query/…` is **relative** —
   prefix `https://osdr.nasa.gov`; the `URL` field in `/v2/dataset/OSD-###/files/`
   is already absolute (that JSON has only `URL` and `REST_URL`, no category).
@@ -358,6 +401,7 @@ Read only what the task needs (paths relative to this folder):
   file category/subcategory/data type, factor and characteristic names).
 - `references/processed-files.md` — GeneLab file names per omics type, columns,
   contrast naming, `file.category` recipe, size limits.
+- `references/mcp-genelab.md` — KG tool map, coverage, KG-vs-API split, provenance wording
 - `references/cohorts.md` — subject IDs, female-only datasets, two-file
   intersections, per-accession enrichment code, retry snippet.
 - `references/examples.md` — 61 verified question → URL pairs (templates).

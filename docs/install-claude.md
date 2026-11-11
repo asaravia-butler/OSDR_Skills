@@ -25,10 +25,6 @@ The two share one interface; the steps are identical.
    Claude shows a "Using osdr-biodata-api" indicator, fetches the API URL(s),
    and returns the table with the URLs it ran.
 
-**Update:** upload the new zip the same way; it replaces the existing version.
-**Remove:** open the skill in Customize → Skills, toggle it off, then
-**… → Delete**.
-
 **Enterprise networks:** if Claude reports that it cannot reach
 `visualization.osdr.nasa.gov`, an admin may need to allow that host in the
 organization's network egress settings.
@@ -81,5 +77,11 @@ In a fresh chat:
 | *List all Drosophila datasets in OSDR with their titles.* | 17 datasets, a `/datasets/` URL containing `organism=/drosophila/` |
 | *Show me the differentially expressed genes for OSD-515, space flight vs ground control.* | ~3,947 significant genes, top-10 up/down tables with log2FC, adj p, Wald stat and group mean/SD, an offer of a CSV |
 | *Show me the temperature and CO₂ readings on ISS during RR-1.* | No biodata query; a short redirect to the OSDR Environmental Data Application (EDA) |
+
+**GeneLab Knowledge Graph (optional).** If the `mcp-genelab` MCP server is
+connected in this client, the skill uses it first for known-study questions
+and labels every answer part as KG or API; nothing in the skill needs
+configuring. To connect the server, follow the Claude instructions in the mcp-genelab
+repository: <https://github.com/sbl-sdsc/mcp-genelab/tree/main#claude-desktop-or-claudeai>.
 
 More cases: [`testing.md`](testing.md) and [`../examples/claude.md`](../examples/claude.md).

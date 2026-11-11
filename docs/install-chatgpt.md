@@ -32,9 +32,6 @@ Same interface in both.
 
 **Share with colleagues:** open the skill's **•••** menu → **Share** (people,
 groups, or a link).
-**Update:** upload the new zip through the same **Create → Upload** flow; the
-newer version replaces the older one.
-**Remove:** **••• → Delete**.
 
 **Network:** ChatGPT's browsing tool fetches public URLs directly. If a call
 returns "unable to fetch", retry once (the server can return HTTP 504 on very
@@ -76,6 +73,12 @@ In a fresh chat or thread:
 | *List all Drosophila datasets in OSDR with their titles.* | 17 datasets from a `/datasets/` URL with `organism=/drosophila/` |
 | *Which Inspiration4 datasets contain GeneLab-processed data files?* | OSD-572, OSD-573, OSD-574, OSD-630 (metagenomics) |
 | *List all human astronaut datasets in OSDR.* | No biodata query; a redirect to NLSP / LSDA / LSAH |
+
+**GeneLab Knowledge Graph (optional).** If the `mcp-genelab` MCP server is
+connected in this client, the skill uses it first for known-study questions
+and labels every answer part as KG or API; nothing in the skill needs
+configuring. To connect the server, follow the ChatGPT instructions in the mcp-genelab
+repository: <https://github.com/sbl-sdsc/mcp-genelab/tree/main#chatgpt>.
 
 More cases: [`testing.md`](testing.md) and
 [`../examples/chatgpt.md`](../examples/chatgpt.md).

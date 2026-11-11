@@ -1,6 +1,6 @@
 {
  "skill": "osdr-biodata-api v1.0.0",
- "how_to_run": "Give each prompt to the client with the skill installed (fresh chat). Pass = the client builds a URL matching expected_url_contains, runs it (or hands it over if egress is blocked), and the reported row count is within ±30% of expected_rows (OSDR grows). Also check the behaviour notes.",
+ "how_to_run": "Give each prompt to the client with the skill installed (fresh chat). Pass = the client builds a URL matching expected_url_contains, runs it (or hands it over if egress is blocked), and the reported row count is within ±30% of expected_rows (OSDR grows). Also check the behaviour notes. Run the suite twice: (a) with the mcp-genelab MCP server connected and (b) without it. In (a) cases that carry a 'with_kg' note must follow it and every answer must label each part 'Source: GeneLab KG via mcp-genelab — <tool>(<args>)' or 'Source: OSDR BioData API — <URL>'. In (b) no mcp-genelab tool may be called, the KG must not be mentioned, and every answer carries API 'Source' lines with the URLs.",
  "cases": [
   {
    "id": 1,
@@ -12,7 +12,8 @@
     "format=json.records|format=csv"
    ],
    "expected_rows": 113,
-   "behaviour": "Reports ~111 distinct OSD accessions; mentions version/citation note."
+   "behaviour": "Reports ~111 distinct OSD accessions; mentions version/citation note.",
+   "with_kg": "Discovery → API directly, no KG call."
   },
   {
    "id": 2,
@@ -48,7 +49,8 @@
     "column.Adj.p.value_(Space%20Flight)v(Ground%20Control)%3C"
    ],
    "expected_rows": 3947,
-   "behaviour": "Two-step: lists files (or contrasts) first, pins ONE exact file name (non-rRNArm), selects columns rather than column.* for the whole table. Does not return a 422."
+   "behaviour": "Two-step: lists files (or contrasts) first, pins ONE exact file name (non-rRNArm), selects columns rather than column.* for the whole table. Does not return a 422.",
+   "with_kg": "KG path: create_session → select_assays('OSD-515') → select_assays('OSD-515','2,1') → find_differentially_expressed_genes(assay, 0.05, 10). Reports 2,511 up / 1,043 down (3,554 annotated genes; notes the API file has 3,947 incl. unannotated), top-10 tables with symbol/name/log2FC/adj p/group mean & SD, CSV offer. Source lines name the tools; DOI via API URL."
   },
   {
    "id": 5,
@@ -101,7 +103,8 @@
    "expected_endpoint": "none",
    "expected_url_contains": [],
    "expected_rows": null,
-   "behaviour": "FIRST sentence states environmental telemetry is outside this skill and gives the EDA link https://visualization.osdr.nasa.gov/eda/. Builds NO biodata URL and does NOT probe /eda/api or any other API."
+   "behaviour": "FIRST sentence states environmental telemetry is outside this skill and gives the EDA link https://visualization.osdr.nasa.gov/eda/. Builds NO biodata URL and does NOT probe /eda/api or any other API.",
+   "with_kg": "No KG call (scope gate first)."
   },
   {
    "id": 10,
@@ -152,7 +155,8 @@
     "%26"
    ],
    "expected_rows": null,
-   "behaviour": "Reads the contrasts file, finds two flight-vs-ground pairs (Carcass; Upon euthanasia), LISTS them and ASKS the user which to use instead of choosing. Once chosen: ENSEMBL, SYMBOL, Log2fc, Adj.p.value<=0.05, Stat and Group.Mean/Stdev of both groups; count of significant genes; top-10 up and top-10 down by log2FC; ends by asking whether the user wants a CSV of all significant genes. (Carcass pair: 635 significant.)"
+   "behaviour": "Reads the contrasts file, finds two flight-vs-ground pairs (Carcass; Upon euthanasia), LISTS them and ASKS the user which to use instead of choosing. Once chosen: ENSEMBL, SYMBOL, Log2fc, Adj.p.value<=0.05, Stat and Group.Mean/Stdev of both groups; count of significant genes; top-10 up and top-10 down by log2FC; ends by asking whether the user wants a CSV of all significant genes. (Carcass pair: 635 significant.)",
+   "with_kg": "KG path: select_assays('OSD-48') lists 4 groups; two flight-vs-ground pairs (3 vs 1, 4 vs 2) → lists them and ASKS; no gene query run."
   },
   {
    "id": 15,
@@ -197,7 +201,8 @@
     "Adj.p.value_(Space%20Flight)v(Ground%20Control)%3C"
    ],
    "expected_rows": 3947,
-   "behaviour": "Single-factor comparison → exactly one contrast, no question needed. Output: ENSEMBL, SYMBOL, Log2fc, Adj.p.value (≤0.05), Stat, Group.Mean/Stdev for both groups; 3,947 significant; top-10 up and top-10 down; ends by asking whether the user wants a CSV."
+   "behaviour": "Single-factor comparison → exactly one contrast, no question needed. Output: ENSEMBL, SYMBOL, Log2fc, Adj.p.value (≤0.05), Stat, Group.Mean/Stdev for both groups; 3,947 significant; top-10 up and top-10 down; ends by asking whether the user wants a CSV.",
+   "with_kg": "Same as case 4 (KG path)."
   },
   {
    "id": 19,
@@ -221,7 +226,8 @@
     "study.factor%20value"
    ],
    "expected_rows": 58,
-   "behaviour": "Title/description from the tree; 58 samples; 6 groups = distinct combinations of the 4 factors (spaceflight, duration, euthanasia location, dissection condition) with n (10/10/9/9/10/10); lists processed files; DOI."
+   "behaviour": "Title/description from the tree; 58 samples; 6 groups = distinct combinations of the 4 factors (spaceflight, duration, euthanasia location, dissection condition) with n (10/10/9/9/10/10); lists processed files; DOI.",
+   "with_kg": "Mixed: get_study_info/select_assays for title, description, groups and 30 contrasts (KG) + API /samples/ for n per group (58 samples; 10/9/10/10/10/9) + DOI; each part labelled."
   },
   {
    "id": 21,
@@ -243,7 +249,8 @@
     "&file.category"
    ],
    "expected_rows": 38,
-   "behaviour": "ONE call with bare &file.category (no GeneLab-processed / fastqc filter — the user did not say 'processed'). Reports all 10 Inspiration4 datasets (OSD-569–575, 630, 656, 687) with their file categories."
+   "behaviour": "ONE call with bare &file.category (no GeneLab-processed / fastqc filter — the user did not say 'processed'). Reports all 10 Inspiration4 datasets (OSD-569–575, 630, 656, 687) with their file categories.",
+   "with_kg": "Discovery → API directly, no KG call."
   },
   {
    "id": 23,
@@ -256,7 +263,28 @@
     "Adj.p.value_(Space%20Flight%20%26%20Frozen)v(Ground%20Control%20%26%20Frozen)%3C"
    ],
    "expected_rows": 1513,
-   "behaviour": "Uses the differential_EXPRESSION file (microbial RNA-seq; not differential abundance). Reads the contrasts file; the only flight-vs-ground contrast is (Space Flight & Frozen)v(Ground Control & Frozen) so it proceeds without asking, and never offers a contrast that is not a column in that file (there is no 'Not frozen' spaceflight group). Requests column.SYMBOL as usual; the 500 means this microbe table has none, so it reruns the same URL without SYMBOL (does not treat 500 as a missing dataset). Tables show gene_id as the first column, then log2FC, adj p, Stat, group mean/SD. 1,513 at adj p ≤ 0.05; 239 with |log2FC| > 1 (168 up, 71 down). Ends with the CSV offer."
+   "behaviour": "Uses the differential_EXPRESSION file (microbial RNA-seq; not differential abundance). Reads the contrasts file; the only flight-vs-ground contrast is (Space Flight & Frozen)v(Ground Control & Frozen) so it proceeds without asking, and never offers a contrast that is not a column in that file (there is no 'Not frozen' spaceflight group). Requests column.SYMBOL as usual; the 500 means this microbe table has none, so it reruns the same URL without SYMBOL (does not treat 500 as a missing dataset). Tables show gene_id as the first column, then log2FC, adj p, Stat, group mean/SD. 1,513 at adj p ≤ 0.05; 239 with |log2FC| > 1 (168 up, 71 down). Ends with the CSV offer.",
+   "with_kg": "get_study_info('OSD-145') → 'No study found' → full API recipe; answer states the study is not in the KG and labels the API URLs."
+  },
+  {
+   "id": 24,
+   "prompt": "What assays and data types does OSD-47 have, and which of them have processed results I can query?",
+   "expected_endpoint": "/v2/dataset/OSD-47/assays/",
+   "expected_url_contains": [
+    "OSD-47"
+   ],
+   "expected_rows": null,
+   "behaviour": "Lists all four assay types (RNA-seq, WGBS, mass spectrometry proteomics, microscopy/histology) with the GeneLab-processed tables available for RNA-seq and WGBS.",
+   "with_kg": "Mixed: get_study_info('OSD-47') gives the RNA-seq and WGBS contrasts (KG); API /v2/dataset/OSD-47/assays/ and a file listing add proteomics and microscopy, which the KG lacks. Each part labelled; nothing reported as missing because the KG lacks it."
+  },
+  {
+   "id": 25,
+   "prompt": "Show me the differentially expressed genes for OSD-515, space flight vs ground control.",
+   "expected_endpoint": "none",
+   "expected_url_contains": [],
+   "expected_rows": null,
+   "behaviour": "Scenario (b) only — mcp-genelab NOT connected: identical to case 4 via the API; no mention of a knowledge graph; 'Source: OSDR BioData API — <URL>' present.",
+   "with_kg": "n/a (this case exists to check the no-KG scenario)."
   }
  ]
 }

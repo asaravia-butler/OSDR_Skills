@@ -5,8 +5,8 @@ workspaces with skills enabled) and to Codex (app, IDE extension, CLI).
 Installation: [`../docs/install-chatgpt.md`](../docs/install-chatgpt.md).
 Expected results for every example: [`README.md`](README.md).
 
-**Status:** the expected outputs below come from the live API and are
-identical to those validated in Claude. Client-specific transcripts from
+**Status:** the expected outputs below come from the live API (re-verified
+9 November 2026) and are identical to those validated in Claude. Client-specific transcripts from
 ChatGPT / Codex testers should be added here (open a PR on this branch with
 the model and date).
 
@@ -19,7 +19,9 @@ the model and date).
 - **Codex:** type `$osdr-biodata-api` to force it, or just ask. Codex runs
   `curl -g …` or `python3 scripts/osdr_query.py …` in its sandbox; approve
   the command (and enable network for the thread if the first call fails).
-- A correct answer always lists the URL(s) run.
+- A correct answer always lists the URL(s) run, and — when the `mcp-genelab`
+  MCP server is connected in ChatGPT — labels each part `Source: GeneLab KG via
+  mcp-genelab — <tool>(<args>)` or `Source: OSDR BioData API — <URL>`.
 
 ---
 
@@ -97,7 +99,7 @@ means the FastQC/MultiQC exclusion was dropped.
 
 ---
 
-## Example 6 — E12–E14, out-of-scope redirects
+## Example 6 — E13–E15, out-of-scope redirects
 
 | Prompt | Expected |
 |---|---|
@@ -107,6 +109,24 @@ means the FastQC/MultiQC exclusion was dropped.
 
 ChatGPT's browsing tool may be tempted to open the EDA page and summarise
 it; that is acceptable, but building biodata URLs for telemetry is not.
+
+---
+
+## Example — with the `mcp-genelab` server connected
+
+**Prompt:** `Show me the differentially expressed genes for OSD-515, space flight vs ground control.`
+
+**Expected answer:** the assistant calls `create_session`,
+`select_assays("OSD-515")`, `select_assays("OSD-515","2,1")` and
+`find_differentially_expressed_genes(<assay id>, 0.05, 10)` instead of the
+API data call: **3,554 annotated genes** (2,511 up, 1,043 down), a note that
+the GeneLab file also holds unannotated genes (3,947), ENSEMBL ids and Wald
+statistics, top-10 tables (symbol, gene name, log2FC, adj p, group mean/SD),
+the CSV offer, and Source lines naming the KG tools plus the API DOI URL.
+For a study the KG lacks (OSD-145) `get_study_info` returns "No study
+found" and the answer falls back to the API path above, saying so. Full
+expectations: [`README.md` E12](README.md#e12--same-questions-with-the-genelab-knowledge-graph-connected).
+Without the server, nothing in this file changes.
 
 ---
 

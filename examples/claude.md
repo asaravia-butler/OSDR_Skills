@@ -5,8 +5,9 @@ Code. Installation: [`../docs/install-claude.md`](../docs/install-claude.md).
 Expected results for every example: [`README.md`](README.md).
 
 **Status:** the transcripts below were produced with the 1.0.0 package on
-Claude Sonnet and Haiku and checked on Opus (September 2026). Row counts may
-have grown since.
+Claude Haiku, Sonnet and Opus, with and without the `mcp-genelab` server
+connected; all figures were re-verified against the live API on 9 November
+2026. Row counts may have grown since.
 
 ## How the skill is invoked
 
@@ -17,6 +18,11 @@ have grown since.
   call when prompted.
 - Claude cites the URLs it ran at the end of every answer; you can paste
   them into a browser to see the raw JSON.
+- With the `mcp-genelab` MCP server connected (a "mcp-genelab" tool chip
+  appears next to the skill chip), known-study questions are answered from the
+  GeneLab Knowledge Graph first and each part of the answer is labelled
+  `Source: GeneLab KG via mcp-genelab — …` or `Source: OSDR BioData API — …`
+  (Transcripts 7–8).
 
 ---
 
@@ -219,7 +225,65 @@ question says *GeneLab-processed*.
 
 ---
 
-## Transcript 7 — E12, out-of-scope redirect
+## Transcript 7 — E12, OSD-515 with `mcp-genelab` connected (Haiku, Sonnet, Opus)
+
+**You:** Show me the differentially expressed genes for OSD-515, space flight vs ground control.
+
+**Claude:**
+
+> Using osdr-biodata-api · mcp-genelab
+>
+> OSD-515 has three groups (Ground Control, Space Flight, Vivarium Control);
+> one contrast matches your request: Space Flight vs Ground Control
+> (RNA-seq, DESeq2).
+>
+> **3,554 annotated genes are significant at adj p ≤ 0.05: 2,511 up, 1,043
+> down.** The knowledge graph holds genes with a symbol only; the GeneLab
+> file in the OSDR API also has unannotated genes (3,947 in total), ENSEMBL
+> ids and the Wald statistic — I can pull that version if you need it.
+>
+> **Top 10 up-regulated**
+>
+> | Gene | Gene name | Log2FC | Adj. p | Mean SF | SD SF | Mean GC | SD GC |
+> |---|---|---|---|---|---|---|---|
+> | Gm2436 | predicted gene 2436 | 6.259 | 3.56e-02 | 23.7 | 29.5 | 1.18 | 0.54 |
+> | Potefam1 | POTE ankyrin domain family member 1 | 5.997 | 6.88e-03 | 12.5 | 16.2 | 1.00 | 0.00 |
+> | … 8 more rows … |
+>
+> **Top 10 down-regulated**
+>
+> | Gene | Gene name | Log2FC | Adj. p | Mean SF | SD SF | Mean GC | SD GC |
+> |---|---|---|---|---|---|---|---|
+> | Igkv3-9 | immunoglobulin kappa variable 3-9 | −3.795 | 4.88e-02 | 1.58 | 1.03 | 7.55 | 14.8 |
+> | Igkv4-78 | immunoglobulin kappa variable 4-78 | −3.564 | 2.16e-02 | 1.39 | 0.68 | 5.17 | 5.06 |
+> | … 8 more rows … |
+>
+> Source: GeneLab KG via mcp-genelab — `create_session()`; `select_assays("OSD-515")`; `select_assays("OSD-515", "2,1")`; `find_differentially_expressed_genes("OSD-515-79b621bb042221f4160c19eaa27ab36b", 0.05, 10)`
+> Source: OSDR BioData API — `…/v2/query/datasets/?id.accession=OSD-515&investigation.study.comment.doi&format=json.records`
+> Source: OSDR OSD-515 (DOI 10.26030/05j9-e312); dataset version = highest version-N folder in s3://nasa-osdr/OSD-515/ — please cite the DOI and state the version.
+>
+> **Would you like a downloadable CSV of all significant genes?**
+
+All three tiers produced this answer with identical numbers. With the server
+disconnected the same prompt gives Transcript 2.
+
+---
+
+## Transcript 8 — E12, mixed KG + API study report (Haiku)
+
+**You:** Tell me about OSD-248: what was studied, what are the treatment groups and how many samples in each?
+
+**Claude:** *(title, RR-6 description, SpaceX-13, 6 groups and 30 DESeq2
+contrasts from the KG; then a groups table with n = 10 / 9 / 10 / 10 / 10 / 9,
+58 samples, from the API)*
+
+> Source: GeneLab KG via mcp-genelab — `get_study_info("OSD-248")`; `select_assays("OSD-248")`
+> Source: OSDR BioData API — `…/v2/query/samples/?id.accession=OSD-248&study.factor%20value&format=json.records` (per-group n)
+> Source: OSDR BioData API — `…/v2/query/datasets/?id.accession=OSD-248&investigation.study.comment.doi&format=json.records` (DOI)
+
+---
+
+## Transcript 9 — E13, out-of-scope redirect
 
 **You:** Show me the temperature and CO2 readings on ISS during RR-1.
 
