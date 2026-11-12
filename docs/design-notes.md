@@ -16,7 +16,7 @@ under 500 lines. Nothing in the package is client-specific.
 client loads the body of `SKILL.md` when the description matches, and the
 reference files only when `SKILL.md` points to them. So `SKILL.md` holds the
 decision procedure and the ten most-used filters, while vocabularies (fields
-and values with counts), GeneLab file naming, Python snippets and the 65
+and values with counts), GeneLab file naming, Python snippets and the 61
 worked examples live in `references/`.
 
 **The description is the trigger.** It lists the nouns users actually type

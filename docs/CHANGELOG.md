@@ -32,7 +32,7 @@ First public release.
 **Behaviours established in this release**
 
 - Mission aliases: `RRRM-1 (RR-8)` = RR-8, `RR-17` = RRRM-2, `RR-1_BSP` =
-  RR-1; comma-joined identifiers; ~22 datasets carry a `mission name` but no
+  RR-1; comma-joined identifiers; 20 datasets carry a `mission name` but no
   Project Identifier.
 - Sample groups = unique combinations of factor values joined by ` & `, in
   the order used by the study's contrasts file; a group may combine more than

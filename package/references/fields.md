@@ -38,7 +38,7 @@ whole stored value.
 | Technology platform | `investigation.study%20assays.study%20assay%20technology%20platform` | e.g. Illumina NovaSeq; useful output column |
 | Project / mission / ground-study identifier | `investigation.study.comment.Project%20Identifier` | values in §3 |
 | Study title | `investigation.study.study%20title` | regex on words works as a crude keyword search |
-| Study DOI | `investigation.study.comment.doi` | citation; populated for ~94% of studies |
+| Study DOI | `investigation.study.comment.doi` | citation; populated for ~97% of studies (624 of 640) |
 | Flight vs ground | `investigation.study.comment.project%20type` | values are inconsistently cased (`Spaceflight Study`, `Spaceflight study`, `Spaceflight`, `Ground Study`, `Ground study`, `High Altitude Study`, `Parabolic Study`) — always regex `/spaceflight/`, `/ground/`, `/altitude/` |
 | Launch / mission name | `investigation.study.comment.mission%20name` | e.g. `SpaceX-4`, `SpaceX-16`; cross-check for missions — a few datasets (OSD-100) have a null project identifier |
 | Mission dates | `investigation.study.comment.mission%20start`, `…mission%20end` | MM/DD/YYYY |

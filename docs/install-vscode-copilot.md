@@ -55,7 +55,8 @@ The cloud agent only sees skills that live **inside the repository**.
    to the default branch.
 2. Allow the API host through the agent's firewall: repository **Settings →
    Copilot → Internet access → Copilot in the cloud → Custom allowlist**, add
-   `visualization.osdr.nasa.gov` and `osdr.nasa.gov`, **Add rule → Save
+   `visualization.osdr.nasa.gov`, `osdr.nasa.gov` and
+   `nasa-osdr.s3-website-us-west-2.amazonaws.com`, **Add rule → Save
    changes**. (Repository rules require the organization setting *Allow
    repository custom rules*; org owners can instead add them under the
    organization's **Settings → Copilot → Internet access**.)
@@ -66,8 +67,8 @@ The cloud agent only sees skills that live **inside the repository**.
 
 ## 3. Copilot CLI
 
-Place the folder in `~/.copilot/skills/osdr-biodata-api/` (personal) or in
-the repo's `.github/skills/`. `copilot skill list` (terminal) or
+The same `~/.agents/skills/osdr-biodata-api/` folder from section 1 (or the
+repo's `.github/skills/`) is read by the Copilot CLI. `copilot skill list` (terminal) or
 `/skills list` (in a session) shows it; invoke with
 `Use the /osdr-biodata-api skill to …` or just ask.
 

@@ -380,7 +380,7 @@ File names, columns, per-omics conventions, `file.category` recipe:
 - Sanity-check organism against the study title before asserting it (a few
   datasets are mis-tagged, e.g. rat studies under *Homo sapiens*).
 - Citation: `BASE/v2/query/datasets/?id.accession=OSD-###&investigation.study.comment.doi&format=json.records`
-  (DOI present for ~94% of studies; else the landing page
+  (DOI present for ~97% of studies; else the landing page
   https://osdr.nasa.gov/bio/repo/data/studies/OSD-###). Version is not in the
   API (highest `version-N` folder in `s3://nasa-osdr/OSD-###/`). End every
   data/metadata answer with: "Source: OSDR OSD-### (DOI <doi>); dataset

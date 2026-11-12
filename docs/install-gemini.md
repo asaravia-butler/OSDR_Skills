@@ -27,7 +27,7 @@ Same interface in both.
 1. Go to gemini.google.com (or open the Mac app). In the sidebar click
    **Customize** (click **More** first if you don't see it), then at the top
    click **Skills**.
-2. Click **Create → Upload** and selec (or drag and drop)t **`osdr-biodata-api-flat.zip`**
+2. Click **Create → Upload** and select (or drag and drop) **`osdr-biodata-api-flat.zip`**
    (Google requires `SKILL.md` in the root of the upload; total size limit
    100 MB). Click **Open**, then **Upload**.
 3. Review the name and description Gemini reads from `SKILL.md` and click
@@ -61,7 +61,9 @@ files).
    first time, then runs `curl -g …` or the Python helper through its shell
    tool — approve those too. If you run with the sandbox on and a call is
    denied network access, approve the *Sandbox Expansion Request* or use a
-   profile that allows network.
+   profile that allows network; the hosts the skill needs are
+   `visualization.osdr.nasa.gov`, `osdr.nasa.gov` and
+`nasa-osdr.s3-website-us-west-2.amazonaws.com`.
 
 The folder name **must stay `osdr-biodata-api`** (it must match the `name`
 field in `SKILL.md`). Note: Google's docs state that for unpaid-tier and

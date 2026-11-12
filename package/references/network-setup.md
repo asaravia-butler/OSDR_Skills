@@ -4,10 +4,9 @@ The API needs **no key, no login, no auth**. The only prerequisite is that the
 agent's sandbox may make outbound HTTPS requests to these hosts:
 
 ```
-visualization.osdr.nasa.gov   # the API (all query / metadata / data calls)
-osdr.nasa.gov                 # file downloads (file.remote_url targets)
-nasa-osdr.s3.amazonaws.com    # public S3 bucket (bulk data, version-N folders)
-s3.us-west-2.amazonaws.com    # S3 region endpoint (path-style listing)
+visualization.osdr.nasa.gov                   # the API (all query / metadata / data calls)
+osdr.nasa.gov                                 # file downloads (file.remote_url targets)
+nasa-osdr.s3-website-us-west-2.amazonaws.com  # public S3 bucket (bulk data, version-N folders)
 ```
 
 `visualization.osdr.nasa.gov` alone covers every query in SKILL.md.

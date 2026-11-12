@@ -49,7 +49,7 @@ For each case in `evals.json`, in a fresh chat, paste the `prompt` and check:
 2. **URL shape.** Every fragment in `expected_url_contains` appears in a URL
    the assistant ran (it must report its URLs).
 3. **Execution.** HTTP 200 and a row/dataset count within about ±30% of
-   `expected_rows` (OSDR grows; counts in this file were taken in September
+   `expected_rows` (OSDR grows; counts in this file were re-verified on 9 November
    2026). A blocked call must be reported as a network problem with the URL
    handed to you, not silently rewritten into a different query.
 4. **Behaviour.** The note in `behaviour` — e.g. the two-query set difference
@@ -78,7 +78,7 @@ Claude Code from `~/.claude/skills`.
 
 ## Regenerating the reference counts
 
-`references/examples.md` in the package lists 65 verified URLs with row
+`references/examples.md` in the package lists 61 verified URLs with row
 counts. To re-verify them against the live API (all are plain GETs):
 
 ```bash

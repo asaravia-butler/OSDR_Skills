@@ -112,7 +112,7 @@ the zip root — for uploaders that require it, e.g. the Gemini web app). The un
 | `references/processed-files.md` | Recommended | GeneLab standardized file names per omics type, their columns, how sample groups and contrasts are named and built, the three-step data-pull recipe, the "has GeneLab-processed data" rule, and size limits. |
 | `references/mcp-genelab.md` | Recommended | GeneLab Knowledge Graph (`mcp-genelab` MCP server): tool map, coverage, which questions go to the KG vs the API, workflows, provenance wording, KG-vs-API output differences. Read only when the server is connected. |
 | `references/cohorts.md` | Recommended | Python snippets: retry helper, per-accession enrichment, subject IDs (Project Identifier + Source Name), "all samples are X" datasets, two-facet intersections, meta-analysis corpus, astronaut/human requests. |
-| `references/examples.md` | Recommended | 65 verified question → URL pairs (copy-paste templates with expected row counts). |
+| `references/examples.md` | Recommended | 61 verified question → URL pairs (copy-paste templates with expected row counts). |
 | `references/network-setup.md` | Recommended | Hosts to allow-list, how to run calls (`curl -g`), per-client network notes. |
 | `references/scope.md` | Recommended | OSD/GLDS/LSDS identifier model, DOI and version lookup, verbatim out-of-scope reply templates, current API limitations. |
 | `scripts/osdr_query.py` | Optional | Standard-library Python helper that builds, runs (with retries) and summarises a query: `python3 scripts/osdr_query.py assays organism=musculus tech=rna-seq`, `… files OSD-515`, `… contrasts OSD-48`, `… dataset OSD-104`. Useful in clients that can run code; harmless where they cannot. |

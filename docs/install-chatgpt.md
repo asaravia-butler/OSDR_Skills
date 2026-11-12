@@ -22,7 +22,7 @@ Same interface in both.
 1. Unzip `osdr-biodata-api.zip` so you have the `osdr-biodata-api` folder.
 2. In the sidebar open **Skills** (on some workspaces it is under
    **Plugins → Skills** tab).
-3. Click **Add → Upload from your computer** and selec (or drag and drop)t the
+3. Click **Add → Upload from your computer** and select (or drag and drop) the
    `osdr-biodata-api` folder (`SKILL.md` must be at the top level of what you
    upload; the zip itself is accepted where the uploader allows archives).
 4. ChatGPT scans the upload. When it no longer shows **Needs review** or
@@ -53,7 +53,9 @@ Codex loads skills from folders on your machine; no upload is needed.
    matching questions.
 4. Approve the `curl -g …` or `python3 scripts/osdr_query.py …` commands when
    asked. If calls fail, turn on network access for the thread/workspace
-   (Codex's sandbox has network off by default).
+   (Codex's sandbox has network off by default); the hosts the skill needs
+   are `visualization.osdr.nasa.gov`, `osdr.nasa.gov` and
+`nasa-osdr.s3-website-us-west-2.amazonaws.com`.
 
 The folder name **must stay `osdr-biodata-api`** (it must match the `name`
 field in `SKILL.md`).
