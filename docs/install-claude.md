@@ -1,10 +1,18 @@
 # Installing `osdr-biodata-api` in Claude
 
 Covers **claude.ai in the browser**, the **Claude desktop app**, **Cowork**
-and **Claude Code**. Download `osdr-biodata-api.zip` from this branch first.
+and **Claude Code**. Download
+[`osdr-biodata-api.zip`](../osdr-biodata-api.zip) first (the `osdr-biodata-api/`
+folder is the root of the zip, which is what Claude's uploader expects).
 
-Skills are available on Free, Pro, Max, Team and Enterprise plans. The skill
-needs no API key: Claude fetches the OSDR URLs itself.
+Official documentation (check it for the latest steps):
+[Use skills in Claude](https://support.claude.com/en/articles/12512180-using-skills-in-claude) ·
+[How to create custom skills](https://support.claude.com/en/articles/12512198-how-to-create-custom-skills) ·
+[Claude Code: Extend Claude with skills](https://code.claude.com/docs/en/skills).
+
+Requires a paid plan (Pro, Max, Ultra, Team or Enterprise); the skill cannot
+be used on the Free plan. No API key is needed: Claude fetches the OSDR URLs
+itself.
 
 ---
 
@@ -12,59 +20,76 @@ needs no API key: Claude fetches the OSDR URLs itself.
 
 The two share one interface; the steps are identical.
 
-1. **One-time setting.** Open **Settings → Capabilities** and turn on
-   **Code execution and file creation**. (Team / Enterprise: an admin enables
-   skills under **Organization settings → Skills** first.)
-2. Open **Customize → Skills** (left sidebar, or Settings → Customize).
-3. Click **+** → **Create skill** → **Upload a skill**.
-4. Choose `osdr-biodata-api.zip`. Claude unpacks it and shows
-   *osdr-biodata-api* in the list with the description from `SKILL.md`.
-5. Make sure the toggle next to the skill is **on**.
-6. Start a **new chat** and ask, for example:
-   *List all Drosophila datasets in OSDR with their titles.*
-   Claude shows a "Using osdr-biodata-api" indicator, fetches the API URL(s),
-   and returns the table with the URLs it ran.
+1. **Settings → Capabilities:** turn on **Create and edit files** (skills need
+   this) and **Use the internet while making files**. On Team / Enterprise an
+   owner enables skills under **Organization settings → Plugins & skills →
+   Policy** and controls internet access under **Organization settings →
+   Capabilities**.
+2. **Settings → Capabilities → Allowed websites:** add the three OSDR hosts
+   the skill uses (Team / Enterprise: an owner adds them in the organization
+   settings, or allows all domains):
 
-**Enterprise networks:** if Claude reports that it cannot reach
-`visualization.osdr.nasa.gov`, an admin may need to allow that host in the
-organization's network egress settings.
+   | Host | Used for |
+   |---|---|
+   | `visualization.osdr.nasa.gov` | every BioData API call |
+   | `osdr.nasa.gov` | file downloads (`file.remote_url` links) |
+   | `nasa-osdr.s3-website-us-west-2.amazonaws.com` | the public OSDR S3 bucket (dataset version folders, bulk file access) |
+
+3. Go to **Customize → Skills** (<https://claude.ai/customize/skills>).
+4. Click **+ Add**, then **Upload skill**.
+5. Select (or drag and drop) `osdr-biodata-api.zip`. Claude unpacks it and lists
+   *osdr-biodata-api* with the description from `SKILL.md`.
+6. Make sure the skill's toggle is **on**.
+7. Start a **new chat** and ask, for example, *List all Drosophila datasets
+   in OSDR with their titles.* Claude shows a "Using osdr-biodata-api"
+   indicator, runs the API URL(s) and reports them with the result.
+
+Upload errors come from a folder name that differs from the `name` in
+`SKILL.md`, a missing `SKILL.md`, or files placed at the zip root instead of
+inside the folder — the branch zip is already laid out correctly.
+
+**If Claude says it cannot reach `visualization.osdr.nasa.gov`:** the hosts in
+step 2 are not in **Allowed websites** yet. Claude should hand you the URL to
+open yourself rather than rewrite the query.
 
 ---
 
-## 2. Cowork (Claude desktop app, agent mode)
+## 2. Cowork
 
-Cowork reads skills from the same account-level list as claude.ai, so a skill
-uploaded in step 1 is available. Two extra points:
-
-- In the Cowork task settings, under **Allow network egress → Additional
-  allowed domains**, add `visualization.osdr.nasa.gov` and `osdr.nasa.gov`
-  (only if egress is restricted to an allow-list; unrestricted egress needs
-  nothing).
-- Cowork can run `scripts/osdr_query.py`, so answers may come from the script
-  rather than raw `curl` calls; both produce the same URLs.
-
-Alternatively, install locally: unzip and place the `osdr-biodata-api` folder
-in `~/.claude/skills/` (Finder: **⌘⇧G** and type `~/.claude/skills`; Windows:
-type `%USERPROFILE%\.claude\skills` in the File Explorer address bar; create
-the folders if missing).
+Skills enabled on your claude.ai account appear in Cowork automatically —
+nothing extra to install. Cowork can run `scripts/osdr_query.py`, so some
+answers come from the script rather than raw `curl`; the URLs are the same.
+If a task's network access is restricted to an allow-list, add the same three
+hosts as in section 1 step 2 (`visualization.osdr.nasa.gov`, `osdr.nasa.gov`,
+`nasa-osdr.s3-website-us-west-2.amazonaws.com`) to the task's allowed
+websites.
 
 ---
 
 ## 3. Claude Code (terminal or IDE extension)
 
+Claude Code is a separate install from the chat app (see
+[Set up Claude Code](https://code.claude.com/docs/en/setup)). Skills uploaded
+to claude.ai also sync to Claude Code (they appear under
+`~/.claude/skills/synced/`; run `/skills` to see them). To install locally
+instead:
+
 1. Unzip `osdr-biodata-api.zip`.
-2. Move the `osdr-biodata-api` folder to one of:
-   - `~/.claude/skills/osdr-biodata-api/` — personal, all projects;
-   - `<project>/.claude/skills/osdr-biodata-api/` — this project only
-     (commit it so teammates get it).
+2. Move the `osdr-biodata-api` folder to one of
+   - `~/.claude/skills/osdr-biodata-api/` — personal, all projects
+     (Finder: **⌘⇧G** → `~/.claude/skills`; Windows: type
+     `%USERPROFILE%\.claude\skills` in the File Explorer address bar);
+   - `<project>/.claude/skills/osdr-biodata-api/` — this project only; commit
+     it to share with the team.
 3. Start (or restart) Claude Code. `/skills` lists it; invoke with
    `/osdr-biodata-api <question>` or just ask an OSDR question.
 4. Approve the `curl` / `python3` calls when prompted, or pre-approve them in
-   `.claude/settings.json` (`"permissions": {"allow": ["Bash(curl *)",
-   "Bash(python3 *)"]}`).
+   `.claude/settings.json`: `"permissions": {"allow": ["Bash(curl *)",
+   "Bash(python3 *)"]}`.
 
 The folder name **must remain `osdr-biodata-api`** — it has to match the
-`name:` field in `SKILL.md`.
+`name` field in `SKILL.md`. (`synced` and `anthropic-skills` are reserved
+folder names.)
 
 ---
 
@@ -81,7 +106,8 @@ In a fresh chat:
 **GeneLab Knowledge Graph (optional).** If the `mcp-genelab` MCP server is
 connected in this client, the skill uses it first for known-study questions
 and labels every answer part as KG or API; nothing in the skill needs
-configuring. To connect the server, follow the Claude instructions in the mcp-genelab
-repository: <https://github.com/sbl-sdsc/mcp-genelab/tree/main#claude-desktop-or-claudeai>.
+configuring. To connect the server, follow the Claude instructions in the
+mcp-genelab repository:
+<https://github.com/sbl-sdsc/mcp-genelab/tree/main#claude-desktop-or-claudeai>.
 
 More cases: [`testing.md`](testing.md) and [`../examples/claude.md`](../examples/claude.md).

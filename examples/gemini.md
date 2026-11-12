@@ -1,18 +1,20 @@
 # Examples — Gemini
 
-Applies to Gemini Spark (gemini.google.com and the Gemini desktop app) and
+Applies to the Gemini app (gemini.google.com and the Gemini app on Mac) and
 the Gemini CLI. Installation:
 [`../docs/install-gemini.md`](../docs/install-gemini.md).
 Expected results for every example: [`README.md`](README.md).
 
-**Status:** the expected outputs below come from the live API (re-verified
-9 November 2026) and are identical to those validated in Claude. Gemini transcripts from testers
-should be added here (open a PR on this branch with the model and date).
+**Status:** tested successfully in the Gemini app with the **Auto** model
+setting (November 2026); the expected outputs below come from the live API
+(re-verified 9 November 2026) and match those validated in Claude. Transcripts
+from other Gemini models or the CLI are welcome (open a PR on this branch with
+the model and date).
 
 ## How the skill is invoked
 
-- **Gemini Spark (web / desktop):** in a Spark task type `/` and choose
-  **osdr-biodata-api**, or just ask. Spark fetches the API URLs with its
+- **Gemini app (web / desktop):** in a chat type `/` (or `@`) and choose
+  **osdr-biodata-api**, or just ask. The app fetches the API URLs with its
   browsing tool. It **cannot run** `scripts/osdr_query.py` (no network from
   scripts), so all answers come from the plain URLs — every recipe in the
   skill supports that.
@@ -76,8 +78,8 @@ mean/SD for both groups; values in
 [`README.md` E4](README.md#e4--genelab-processed-differential-expression-unambiguous))
 → *Would you like a downloadable CSV of all significant genes?*
 
-In Spark, the CSV offer is fulfilled by giving the `format=csv` URL for the
-same query (Spark cannot write files); in the CLI the file is written to the
+In the Gemini app, the CSV offer is fulfilled by giving the `format=csv` URL
+for the same query (the app cannot write files); in the CLI the file is written to the
 working directory.
 
 ---
@@ -137,7 +139,7 @@ Without the server, nothing in this file changes.
 
 ## Recording a transcript
 
-When adding a real transcript, include: client (Spark web / desktop / CLI),
+When adding a real transcript, include: client (Gemini web / Mac app / CLI),
 model, date, the prompt verbatim, the URLs or commands the assistant ran,
 the row counts it reported, and whether the behaviour matched the
 expectation above.

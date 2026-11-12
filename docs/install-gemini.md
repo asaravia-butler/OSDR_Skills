@@ -1,66 +1,78 @@
 # Installing `osdr-biodata-api` in Gemini
 
-Covers the **Gemini web app** (gemini.google.com), the **Gemini desktop app**
+Covers the **Gemini web app** (gemini.google.com), the **Gemini app on Mac**
 and the **Gemini CLI**. Two downloads exist on this branch:
 
-- `osdr-biodata-api-flat.zip` — `SKILL.md` at the root of the zip. **Use this
-  for the Gemini web / desktop app**, whose uploader requires it.
-- `osdr-biodata-api.zip` — the `osdr-biodata-api/` folder as zip root. Use
-  this for the Gemini CLI.
+- [`osdr-biodata-api-flat.zip`](../osdr-biodata-api-flat.zip) — `SKILL.md`
+  at the root of the zip. **Use this for the Gemini web / Mac app**, whose
+  uploader requires it.
+- [`osdr-biodata-api.zip`](../osdr-biodata-api.zip) — the `osdr-biodata-api/`
+  folder as zip root. Use this for the Gemini CLI.
 
-> **Plan note.** Skills in the Gemini app live in **Gemini Spark** and require
-> a personal Google account (18+) with **Google AI Pro or Ultra**. At the time
-> of writing they are not available in the EEA, UK, Switzerland or Nigeria, or
-> on Workspace accounts. The Gemini CLI has no such restriction.
+Official documentation (check it for the latest steps):
+[Create & manage skills for Gemini Apps](https://support.google.com/gemini/answer/17094296) ·
+[About the transition from Gems to skills](https://support.google.com/gemini/answer/18560919) ·
+[Gemini CLI: Agent Skills](https://geminicli.com/docs/cli/skills/).
+
+> **Eligibility.** Skills in the Gemini app are available to individuals aged
+> 18 or over signed in to a **personal Google Account**, without a Google AI
+> subscription.
 
 ---
 
-## 1. Gemini web app and Gemini desktop app
+## 1. Gemini web app and Gemini app on Mac
 
 Same interface in both.
 
-1. Go to gemini.google.com (or open the desktop app), click **Switch to
-   Spark**, then open **Skills** in the left panel.
-2. Click **Upload** and choose **`osdr-biodata-api-flat.zip`**.
-3. Gemini reads the name and description from `SKILL.md`. Review them and
-   click **Create**.
-4. The skill is enabled by default. In a Spark task, type **/** and pick
-   **osdr-biodata-api**, or just ask an OSDR question and let it trigger.
-5. Gemini fetches the API URLs with its own browsing tool. Spark does **not**
+1. Go to gemini.google.com (or open the Mac app). In the sidebar click
+   **Customize** (click **More** first if you don't see it), then at the top
+   click **Skills**.
+2. Click **Create → Upload** and selec (or drag and drop)t **`osdr-biodata-api-flat.zip`**
+   (Google requires `SKILL.md` in the root of the upload; total size limit
+   100 MB). Click **Open**, then **Upload**.
+3. Review the name and description Gemini reads from `SKILL.md` and click
+   **Create**.
+4. The skill is active by default. In a chat type **/** (or **@** with the
+   updated shortcut) and pick **osdr-biodata-api**, or just ask an OSDR
+   question — Gemini uses active skills automatically.
+5. Gemini fetches the API URLs with its browsing tool. The app does **not**
    run scripts that need internet access, so `scripts/osdr_query.py` is
-   ignored there — that is expected; every recipe in the skill also works as
-   plain URLs.
+   ignored there — expected; every recipe in the skill also works as plain
+   URLs.
 
-**Manage:** on the Skills page click the skill → **More** → **Disable / Edit /
-Download**.
+**Manage:** click the skill → **More** → **Deactivate / Activate**, **Edit
+with Gemini** or **Replace skill** (re-upload the whole package to change its
+files).
 
 ---
 
 ## 2. Gemini CLI
 
 1. Unzip `osdr-biodata-api.zip`.
-2. Move the `osdr-biodata-api` folder to one of:
+2. Move the `osdr-biodata-api` folder to **one** of
    - `~/.gemini/skills/osdr-biodata-api/` — personal, all projects;
-   - `<project>/.gemini/skills/osdr-biodata-api/` — one project;
-   - `~/.agents/skills/osdr-biodata-api/` — also read by Gemini CLI, so a
-     single copy can serve Codex and Gemini.
-   (macOS Finder: **⌘⇧G** and type the path; Windows File Explorer: type
-   `%USERPROFILE%\.gemini\skills` in the address bar.)
-3. Start `gemini`. `/skills list` shows the skill. When a prompt matches,
-   Gemini asks you to **approve activating** the skill, then runs
-   `curl -g …` or the Python helper through its shell tool — approve those
-   too, or allow them for the session.
-4. If the shell tool is sandboxed without network, enable network or run
-   with the sandbox off for this project.
+   - `~/.agents/skills/osdr-biodata-api/` — personal, also read by Codex (if
+     both exist, `.agents` wins and the CLI reports a conflict);
+   - `<project>/.gemini/skills/osdr-biodata-api/` — one project (also
+     `.agents/skills/`).
+3. Check with `gemini skills list --all` (from a terminal) or `/skills list`
+   inside a session.
+4. Ask an OSDR question. Gemini asks you to approve activating the skill the
+   first time, then runs `curl -g …` or the Python helper through its shell
+   tool — approve those too. If you run with the sandbox on and a call is
+   denied network access, approve the *Sandbox Expansion Request* or use a
+   profile that allows network.
 
-The folder name **must stay `osdr-biodata-api`** (it must match the `name:`
-field in `SKILL.md`).
+The folder name **must stay `osdr-biodata-api`** (it must match the `name`
+field in `SKILL.md`). Note: Google's docs state that for unpaid-tier and
+Google One users Gemini CLI was replaced by **Antigravity CLI** in June 2026;
+the same skill folders apply there.
 
 ---
 
 ## 3. Check it works
 
-In a fresh task / session:
+In a fresh chat / session:
 
 | Ask | Expect |
 |---|---|
@@ -71,8 +83,9 @@ In a fresh task / session:
 **GeneLab Knowledge Graph (optional).** If the `mcp-genelab` MCP server is
 connected in this client, the skill uses it first for known-study questions
 and labels every answer part as KG or API; nothing in the skill needs
-configuring. To connect the server, follow the Gemini instructions in the mcp-genelab
-repository: <https://github.com/sbl-sdsc/mcp-genelab/tree/main#gemini>.
+configuring. To connect the server, follow the Gemini instructions in the
+mcp-genelab repository:
+<https://github.com/sbl-sdsc/mcp-genelab/tree/main#gemini>.
 
 More cases: [`testing.md`](testing.md) and
 [`../examples/gemini.md`](../examples/gemini.md).

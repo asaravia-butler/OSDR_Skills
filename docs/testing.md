@@ -62,11 +62,19 @@ the next version — open an issue on this branch.
 
 ## Known-good results at 1.0.0
 
-Tested with Claude Haiku, Sonnet, Opus and Fable (claude.ai and Cowork), in
-both KG scenarios (November 2026). All 25 cases pass on Sonnet and above; on Haiku the remaining variability is
-occasionally choosing `column.*` for a whole table (case 4) or forgetting the
-CSV offer. Other clients load the same package; their transcripts should be
-added to `examples/` as they are collected.
+Tested successfully in all four clients (November 2026): Claude (Haiku,
+Sonnet, Opus and Fable — claude.ai and Cowork, with and without the
+`mcp-genelab` server), ChatGPT (GPT-6.1 Sol), Gemini (**Auto** model setting)
+and VS Code / GitHub Copilot (**Auto – balanced**, which selected GPT-6 Luna).
+All 25 cases pass on Claude Sonnet and above; on Haiku the remaining
+variability is occasionally choosing `column.*` for a whole table (case 4) or
+forgetting the CSV offer. Transcripts from further clients and models are
+welcome — add them to `examples/` with the model and date.
+
+Install paths verified in a sandbox: the skill folder is discovered by the
+Gemini CLI from `~/.gemini/skills` and `~/.agents/skills`, by the Copilot CLI
+from `.github/skills`, `~/.copilot/skills` and `~/.agents/skills`, and by
+Claude Code from `~/.claude/skills`.
 
 ## Regenerating the reference counts
 

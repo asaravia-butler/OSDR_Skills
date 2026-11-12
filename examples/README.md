@@ -10,7 +10,7 @@ looks like there.
 |---|---|
 | Claude (claude.ai, desktop, Cowork, Claude Code) | [`claude.md`](claude.md) |
 | ChatGPT / Codex | [`chatgpt.md`](chatgpt.md) |
-| Gemini (Spark web app, Gemini CLI) | [`gemini.md`](gemini.md) |
+| Gemini (web app, Mac app, Gemini CLI) | [`gemini.md`](gemini.md) |
 | VS Code / GitHub Copilot | [`vscode-copilot.md`](vscode-copilot.md) |
 
 Every answer ends with provenance lines — `Source: OSDR BioData API — <URL>`

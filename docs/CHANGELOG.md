@@ -80,6 +80,7 @@ First public release.
 **Compatibility**
 
 Agent Skills format; loads unchanged in Claude (claude.ai, desktop, Cowork,
-Claude Code), ChatGPT / Codex, Gemini (Spark, CLI) and VS Code / GitHub
-Copilot. Tested on Claude Haiku, Sonnet, Opus and Fable, with and without
-the `mcp-genelab` server connected.
+Claude Code), ChatGPT / Codex, Gemini (app, CLI) and VS Code / GitHub
+Copilot. Tested on Claude Haiku, Sonnet, Opus and Fable (with and without
+the `mcp-genelab` server connected), ChatGPT GPT-6.1 Sol, Gemini (Auto) and
+VS Code / Copilot (Auto – balanced → GPT-6 Luna).

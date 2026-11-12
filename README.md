@@ -66,9 +66,14 @@ and the assistant will:
   astronaut records live in other systems; the skill points to them but does
   not query them.
 - **Network.** The assistant's environment must be able to reach
-  `https://visualization.osdr.nasa.gov` (and `osdr.nasa.gov` for file
-  downloads). Sandboxed clients may need that host allow-listed — see the
+  `visualization.osdr.nasa.gov` (API calls), `osdr.nasa.gov` (file
+  downloads) and `nasa-osdr.s3-website-us-west-2.amazonaws.com` (the public
+  S3 bucket). Sandboxed clients may need these hosts allow-listed — see the
   installation guides.
+- **Plans.** Claude: paid plan required (not available on Free). ChatGPT:
+  any paid plan (Plus and up; not Free) — Codex is the free route. Gemini:
+  personal Google Account, 18+, no subscription needed. VS Code / Copilot:
+  any Copilot plan.
 - **Server timeouts.** Very broad queries (repository-wide file-name scans,
   many filters plus many output columns) can return HTTP 504 after ~60 s. The
   skill retries the same URL and prefers a narrow-then-expand strategy, but a
@@ -76,11 +81,12 @@ and the assistant will:
 - **Not in the API.** Dataset version numbers (use the S3 bucket), full-text
   search, a count endpoint, and the `/v2/metadata/fields/` endpoint listed in
   the OpenAPI spec (currently 404). Study DOIs *are* available.
-- **Model dependence.** Tested with Claude (Haiku, Sonnet, Opus, Fable). The
-  package follows the Agent Skills format that ChatGPT/Codex, Gemini and
-  Copilot load, and the instructions are written for smaller models, but
-  answer completeness varies with the model; the `docs/evals.json` cases are
-  the acceptance test for any client.
+- **Model dependence.** Tested successfully in Claude (Haiku, Sonnet, Opus,
+  Fable), ChatGPT (GPT-6.1 Sol), Gemini (Auto model setting) and VS Code /
+  GitHub Copilot (Auto – balanced, which selected GPT-6 Luna). The
+  instructions are written for smaller models, but answer completeness still
+  varies with the model; the `docs/evals.json` cases are the acceptance test
+  for any client.
 - **Knowledge-graph coverage.** The KG holds RNA-seq, microarray, WGBS and
   16S/ITS *differential results* and study metadata for ~212 studies, keyed by
   gene symbol (no ENSEMBL ids, Wald statistics or unannotated genes). The skill
@@ -92,10 +98,11 @@ and the assistant will:
 
 ## What is in the package
 
-Download **`osdr-biodata-api.zip`** (the folder `osdr-biodata-api/` is the zip
-root — use this for Claude, ChatGPT/Codex, Gemini CLI and VS Code) or
-**`osdr-biodata-api-flat.zip`** (`SKILL.md` at the zip root — for uploaders
-that require it, e.g. the Gemini web app). The unpacked package is also in
+Download **[`osdr-biodata-api.zip`](osdr-biodata-api.zip)** (the folder
+`osdr-biodata-api/` is the zip root — use this for Claude, ChatGPT/Codex,
+Gemini CLI and VS Code / Copilot) or
+**[`osdr-biodata-api-flat.zip`](osdr-biodata-api-flat.zip)** (`SKILL.md` at
+the zip root — for uploaders that require it, e.g. the Gemini web app). The unpacked package is also in
 [`package/`](package/) for browsing.
 
 | File | Required? | What it is |
@@ -120,8 +127,8 @@ app**, and (where relevant) the command-line tool:
 
 - [Claude (claude.ai, Claude desktop, Claude Code, Cowork)](docs/install-claude.md)
 - [ChatGPT and Codex](docs/install-chatgpt.md)
-- [Gemini (web app and Gemini CLI)](docs/install-gemini.md)
-- [VS Code / GitHub Copilot (desktop and github.com)](docs/install-vscode-copilot.md)
+- [Gemini (web app, Mac app and Gemini CLI)](docs/install-gemini.md)
+- [VS Code / GitHub Copilot (desktop, github.com cloud agent and Copilot CLI)](docs/install-vscode-copilot.md)
 
 After installing, run the short test in [`docs/testing.md`](docs/testing.md).
 

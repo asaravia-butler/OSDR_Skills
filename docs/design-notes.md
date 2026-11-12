@@ -46,7 +46,7 @@ wrong. It was withdrawn; the current package prefers fixed defaults plus
 
 **The script is optional.** `scripts/osdr_query.py` is standard-library
 Python that builds the same URLs the text describes, adds retries and
-summarises results. Clients that cannot run code (Gemini Spark) ignore it
+summarises results. Clients that cannot run code (the Gemini app) ignore it
 and use the URLs directly; nothing depends on it.
 
 ## 2. API behaviours encoded in the skill

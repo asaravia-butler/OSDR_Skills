@@ -5,9 +5,11 @@ on github.com and the Copilot CLI. Installation:
 [`../docs/install-vscode-copilot.md`](../docs/install-vscode-copilot.md).
 Expected results for every example: [`README.md`](README.md).
 
-**Status:** the expected outputs below come from the live API (re-verified
-9 November 2026) and are identical to those validated in Claude. Copilot transcripts from testers
-should be added here (open a PR on this branch with the model and date).
+**Status:** tested successfully in VS Code with Copilot's **Auto – balanced**
+model setting, which selected **GPT-6 Luna** (November 2026); the expected
+outputs below come from the live API (re-verified 9 November 2026) and match
+those validated in Claude. Transcripts from other Copilot models are welcome
+(open a PR on this branch with the model and date).
 
 ## How the skill is invoked
 

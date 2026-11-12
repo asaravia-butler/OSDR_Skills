@@ -1,14 +1,15 @@
 # Examples — ChatGPT and Codex
 
-Applies to the ChatGPT web app and desktop app (Business / Enterprise / Edu
-workspaces with skills enabled) and to Codex (app, IDE extension, CLI).
+Applies to the ChatGPT web app and desktop app (any paid plan; not Free) and
+to Codex (app, IDE extension, CLI).
 Installation: [`../docs/install-chatgpt.md`](../docs/install-chatgpt.md).
 Expected results for every example: [`README.md`](README.md).
 
-**Status:** the expected outputs below come from the live API (re-verified
-9 November 2026) and are identical to those validated in Claude. Client-specific transcripts from
-ChatGPT / Codex testers should be added here (open a PR on this branch with
-the model and date).
+**Status:** tested successfully in ChatGPT with **GPT-6.1 Sol** (November
+2026); the expected outputs below come from the live API (re-verified
+9 November 2026) and match those validated in Claude. Transcripts from other
+ChatGPT / Codex models are welcome (open a PR on this branch with the model
+and date).
 
 ## How the skill is invoked
 
